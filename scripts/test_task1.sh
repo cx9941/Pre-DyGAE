@@ -28,7 +28,7 @@ do
 for bias in ${11}
 do
 
-python code/test.py \
+python code/test_task1.py \
     --mode test \
     --data_name $data \
     --rg_weight $rg_weight \

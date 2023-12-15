@@ -1,0 +1,51 @@
+12/15/2023 09:42:45 - INFO - args -   data_name: Man
+12/15/2023 09:42:45 - INFO - args -   task: task1
+12/15/2023 09:42:45 - INFO - args -   rg_loss_fn: tweedie
+12/15/2023 09:42:45 - INFO - args -   device: cuda
+12/15/2023 09:42:45 - INFO - args -   train_path: data/Man/task1/train/triplet_percentage.tsv
+12/15/2023 09:42:45 - INFO - args -   test_path: data/Man/task1/test/triplet_percentage.tsv
+12/15/2023 09:42:45 - INFO - args -   eval_path: data/Man/task1/eval/triplet_percentage.tsv
+12/15/2023 09:42:45 - INFO - args -   mode: train
+12/15/2023 09:42:45 - INFO - args -   time: no
+12/15/2023 09:42:45 - INFO - args -   fix_emb: no
+12/15/2023 09:42:45 - INFO - args -   fix_model: yes
+12/15/2023 09:42:45 - INFO - args -   cross_attn: no
+12/15/2023 09:42:45 - INFO - args -   gaussian: yes
+12/15/2023 09:42:45 - INFO - args -   bias: no
+12/15/2023 09:42:45 - INFO - args -   owner_id: new
+12/15/2023 09:42:45 - INFO - args -   rg_activate_fn: softplus
+12/15/2023 09:42:45 - INFO - args -   num_epochs: 2000
+12/15/2023 09:42:45 - INFO - args -   eval_step: 50
+12/15/2023 09:42:45 - INFO - args -   e_dim: 10
+12/15/2023 09:42:45 - INFO - args -   sample_size: 3000
+12/15/2023 09:42:45 - INFO - args -   lr: 0.0001
+12/15/2023 09:42:45 - INFO - args -   rg_weight: 0.0
+12/15/2023 09:42:45 - INFO - args -   lp_weight: 1.0
+12/15/2023 09:42:45 - INFO - args -   rank_weight: 0.0
+12/15/2023 09:42:45 - INFO - args -   con_weight: 0.0
+12/15/2023 09:42:45 - INFO - args -   diff_weight: 1.0
+12/15/2023 09:42:45 - INFO - args -   seed: 0
+12/15/2023 09:42:45 - INFO - args -   k: 1
+12/15/2023 09:42:45 - INFO - args -   initial_embedding: no
+12/15/2023 09:42:45 - INFO - args -   date: 1
+12/15/2023 09:42:45 - INFO - args -   load_state_path: None
+12/15/2023 09:42:45 - INFO - args -   load_node_embedding_path: None
+12/15/2023 09:42:45 - INFO - args -   load_time_embedding_path: None
+12/15/2023 09:42:45 - INFO - args -   start_date: None
+12/15/2023 09:42:45 - INFO - args -   task2_strategy: last
+12/15/2023 09:42:45 - INFO - args -   adaptive: yes
+12/15/2023 09:42:45 - INFO - args -   root_dir: epoch_2000_k_1_lr_0.0001_initalembed_no_seed_0/
+12/15/2023 09:42:45 - INFO - args -   identity: rglossfn_tweedie_activate_softplus_rgweight_0.0_lpweight_1.0_rankweight_0.0_conweight_0.0_gaussian_yes_crossattn_no_bias_no
+12/15/2023 09:42:45 - INFO - args -   checkpoint_path: outputs/new_checkpoints/task1/Man/epoch_2000_k_1_lr_0.0001_initalembed_no_seed_0/rglossfn_tweedie_activate_softplus_rgweight_0.0_lpweight_1.0_rankweight_0.0_conweight_0.0_gaussian_yes_crossattn_no_bias_no.pt
+12/15/2023 09:42:45 - INFO - args -   log_path: outputs/new_logs/task1/Man/train/epoch_2000_k_1_lr_0.0001_initalembed_no_seed_0/rglossfn_tweedie_activate_softplus_rgweight_0.0_lpweight_1.0_rankweight_0.0_conweight_0.0_gaussian_yes_crossattn_no_bias_no.log
+12/15/2023 09:42:45 - INFO - args -   results_path: outputs/new_results/task1/Man/train/epoch_2000_k_1_lr_0.0001_initalembed_no_seed_0/rglossfn_tweedie_activate_softplus_rgweight_0.0_lpweight_1.0_rankweight_0.0_conweight_0.0_gaussian_yes_crossattn_no_bias_no.pt
+12/15/2023 09:42:45 - INFO - args -   scores_path: outputs/new_scores/task1/Man/train/epoch_2000_k_1_lr_0.0001_initalembed_no_seed_0/rglossfn_tweedie_activate_softplus_rgweight_0.0_lpweight_1.0_rankweight_0.0_conweight_0.0_gaussian_yes_crossattn_no_bias_no.pt
+12/15/2023 09:42:45 - INFO - args -   node_embedding_path: outputs/new_node_embedding/task1/Man/train/epoch_2000_k_1_lr_0.0001_initalembed_no_seed_0/rglossfn_tweedie_activate_softplus_rgweight_0.0_lpweight_1.0_rankweight_0.0_conweight_0.0_gaussian_yes_crossattn_no_bias_no_node.pt
+12/15/2023 09:42:45 - WARN - matplotlib -   Duplicate key in file PosixPath('/opt/conda/envs/pyg/lib/python3.8/site-packages/matplotlib/mpl-data/matplotlibrc'), line 768 ('font.family : sans-serif ')
+12/15/2023 09:42:45 - WARN - matplotlib -   Duplicate key in file PosixPath('/opt/conda/envs/pyg/lib/python3.8/site-packages/matplotlib/mpl-data/matplotlibrc'), line 769 ('font.sans-serif : SimHei ')
+12/15/2023 09:42:45 - WARN - matplotlib -   Duplicate key in file PosixPath('/opt/conda/envs/pyg/lib/python3.8/site-packages/matplotlib/mpl-data/matplotlibrc'), line 770 ('axes.unicode_minus : False ')
+12/15/2023 09:42:47 - INFO - mydataset -   # entities: 1188
+12/15/2023 09:42:47 - INFO - mydataset -   # relations: 1
+12/15/2023 09:42:47 - INFO - mydataset -   # training edges: 52574
+12/15/2023 09:42:47 - INFO - mydataset -   # validation edges: 5842
+12/15/2023 09:42:47 - INFO - mydataset -   # testing edges: 7102

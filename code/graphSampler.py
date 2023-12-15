@@ -82,10 +82,8 @@ class SubgraphIterator:
         self.sample_size = sample_size
         self.num_epochs = num_epochs
         self.pos_sampler = GlobalUniform(g, sample_size)
-        if time == 'no':
-            self.neg_sampler = NegativeSampler(k)
-        else:
-            self.neg_sampler = Time_NegativeSampler(k)
+        # self.neg_sampler = NegativeSampler(k)
+        self.neg_sampler = Time_NegativeSampler(k)
 
     def __len__(self):
         return self.num_epochs

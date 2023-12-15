@@ -4,7 +4,7 @@ data=$1
 task=task1
 lp_weight=1.0
 num_epochs=2000
-owner_id=temp
+owner_id=new
 time="no"
 
 for seed in $2
@@ -27,7 +27,7 @@ for cross_attn in ${10}
 do
 for bias in ${11}
 do
-python code/train.py \
+python code/train_task1.py \
     --mode train \
     --data_name $data \
     --rg_weight $rg_weight \
@@ -35,7 +35,7 @@ python code/train.py \
     --rg_loss_fn $rg_loss_fn \
     --train_path data/$data/task1/train/triplet_percentage.tsv \
     --eval_path data/$data/task1/eval/triplet_percentage.tsv \
-    --test_path data/$data/task1/test/filter1_triplet_percentage.tsv \
+    --test_path data/$data/task1/test/triplet_percentage.tsv \
     --task $task \
     --k $k \
     --num_epochs $num_epochs \
@@ -50,7 +50,7 @@ python code/train.py \
     --seed $seed \
     --time $time
 
-python code/test.py \
+python code/test_task1.py \
     --mode test \
     --data_name $data \
     --rg_weight $rg_weight \
@@ -58,7 +58,7 @@ python code/test.py \
     --rg_loss_fn $rg_loss_fn \
     --train_path data/$data/task1/train/triplet_percentage.tsv \
     --test_path data/$data/task1/eval/triplet_percentage.tsv \
-    --eval_path data/$data/task1/test/filter1_triplet_percentage.tsv \
+    --eval_path data/$data/task1/test/triplet_percentage.tsv \
     --task $task \
     --k $k \
     --num_epochs $num_epochs \
