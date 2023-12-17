@@ -129,7 +129,13 @@ class Trainer:
                         logger.info(metric)
                         if best_mae < metric['mrr']:
                             best_mae = metric['mrr']
-                            self.save_model(step)
+                            if self.time == 'yes':
+                                if self.node_embedding_path:
+                                    torch.save((self.real_mu_embeddings, self.real_sigma_embeddings), self.node_embedding_path)
+                                if self.time_embedding_path:
+                                    torch.save((self.real_mu_time_embeddings, self.real_sigma_time_embeddings), self.time_embedding_path)
+                            else:
+                                self.save_model(step)
 
     def gain_time_embedding(self):
         model = self.model
@@ -180,8 +186,10 @@ class Trainer:
                     real_sigma_embeddings = torch.zeros(
                         self.pos_num_nodes + self.skill_num_nodes, mu_embedding.shape[-1]).to(self.device)
                     real_sigma_embeddings[train_nids] = sigma_embedding
-                    torch.save((real_mu_embeddings, real_sigma_embeddings),
-                               self.node_embedding_path)
+                    self.real_mu_embeddings = real_mu_embeddings
+                    self.real_sigma_embeddings = real_sigma_embeddings
+
+
                 if self.time_embedding_path:
                     real_mu_time_embeddings = torch.zeros(
                         self.pos_num_nodes + self.skill_num_nodes, mu_embedding.shape[-1]).to(self.device)
@@ -189,9 +197,8 @@ class Trainer:
                     real_sigma_time_embeddings = torch.zeros(
                         self.pos_num_nodes + self.skill_num_nodes, mu_embedding.shape[-1]).to(self.device)
                     real_sigma_time_embeddings[train_nids] = sigma_time_embdding
-
-                    torch.save((real_mu_time_embeddings, real_sigma_time_embeddings),
-                               self.time_embedding_path)
+                    self.real_mu_time_embeddings = real_mu_time_embeddings
+                    self.real_sigma_time_embeddings = real_sigma_time_embeddings
 
                 if self.time == 'yes':
                     import copy

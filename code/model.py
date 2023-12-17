@@ -26,8 +26,9 @@ from sklearn.metrics import f1_score, classification_report
 from dgl.nn.pytorch import GraphormerLayer
 import copy
 
+
 class LinkPredict(nn.Module):
-    def __init__(self, num_nodes, pos_num_nodes, skill_num_nodes, num_rels, cross_attn="yes", embedding=None, h_dim=768, reg_param=0.01, rg_weight=1, lp_weight=1, rank_weight=1, con_weight=1, diff_weight = 0, rg_loss_fn=None, rg_activate_fn=None, gaussian="yes", bias="yes", initial_embedding="yes", time="no", num_heads=4, real_id_nodes=None, e_dim=10, adaptive='yes'):
+    def __init__(self, num_nodes, pos_num_nodes, skill_num_nodes, num_rels, cross_attn="yes", embedding=None, h_dim=768, reg_param=0.01, rg_weight=1, lp_weight=1, rank_weight=1, con_weight=1, diff_weight=0, rg_loss_fn=None, rg_activate_fn=None, gaussian="yes", bias="yes", initial_embedding="yes", time="no", num_heads=4, real_id_nodes=None, e_dim=10, adaptive='yes'):
         super().__init__()
         self.embedding = embedding
         self.emb = nn.Embedding(num_nodes, h_dim)
@@ -73,6 +74,7 @@ class LinkPredict(nn.Module):
         self.fc_lp = nn.Linear(h_dim, h_dim)
 
         self.fc_rg = nn.Linear(h_dim, 1)
+        self.feedback = nn.Linear(h_dim, h_dim)
         self.h_dim = h_dim
 
         self.down_sampling = nn.Linear(h_dim, 5)
@@ -82,19 +84,20 @@ class LinkPredict(nn.Module):
         self.time = time
 
         if time == 'yes':
-            self.temporal_emb = TemporalEmb(num_nodes, h_dim, e_dim=e_dim, real_id_nodes=real_id_nodes, adaptive=adaptive)
+            self.temporal_emb = TemporalEmb(
+                num_nodes, h_dim, e_dim=e_dim, real_id_nodes=real_id_nodes, adaptive=adaptive)
         self.load_node_embed = False
         self.load_node_temporal_embed = False
 
         self.fc_diff = nn.Linear(h_dim, 4)
-    
+
     def load_node_embedding(self, mu_embedding, sigma_embedding):
         self.mu_embedding = nn.Embedding(self.num_nodes, self.h_dim)
         self.sigma_embedding = nn.Embedding(self.num_nodes, self.h_dim)
         self.mu_embedding.weight = nn.Parameter(mu_embedding)
         self.sigma_embedding.weight = nn.Parameter(sigma_embedding)
         self.load_node_embed = True
-    
+
     def load_node_temporal_embedding(self, mu_time_embedding, sigma_time_embedding):
         self.mu_time_embedding = nn.Embedding(self.num_nodes, self.h_dim)
         self.sigma_time_embedding = nn.Embedding(self.num_nodes, self.h_dim)
@@ -112,7 +115,11 @@ class LinkPredict(nn.Module):
         s = input_embed[row_indices]
         r = self.w_relation[triplets[:, 1]]
         o = input_embed[col_indices]
-        rg_origin_score = self.fc_rg(s * r * o).squeeze(-1)
+        s = self.feedback(s)
+        r = self.feedback(r)
+        o = self.feedback(o)
+        rg_origin_score = (s * r * o).sum(dim=-1)
+        # rg_origin_score = self.fc_rg(s * r * o).squeeze(-1)
         rg_score = self.rg_activate_fn(rg_origin_score)
         return rg_score
 
@@ -125,7 +132,7 @@ class LinkPredict(nn.Module):
         o = input_embed[col_indices]
         lp_score = torch.sum(s * r * o, dim=1)
         return lp_score
-    
+
     def encoder(self, g, nids, std):
         if not self.load_node_embed:
             x = self.emb(nids)
@@ -137,7 +144,8 @@ class LinkPredict(nn.Module):
                         self.embedding.to(x.device))
                     attn_bias = torch.cosine_similarity(down_embedding.unsqueeze(
                         1), down_embedding.unsqueeze(0), dim=-1).unsqueeze(-1).repeat(1, 1, self.num_heads)
-                    attn_bias = attn_bias[nids[nids < self.pos_num_nodes]][:, nids[nids >= self.pos_num_nodes]].unsqueeze(0)
+                    attn_bias = attn_bias[nids[nids < self.pos_num_nodes]
+                                          ][:, nids[nids >= self.pos_num_nodes]].unsqueeze(0)
                     attn_bias = F.normalize(attn_bias)
                 else:
                     attn_bias = None
@@ -164,9 +172,11 @@ class LinkPredict(nn.Module):
             # time_emb
             if self.time == 'yes':
                 if self.load_node_temporal_embed:
-                    mu_time_embdding, sigma_time_embdding = self.mu_time_embedding(nids), self.sigma_time_embedding(nids)
+                    mu_time_embdding, sigma_time_embdding = self.mu_time_embedding(
+                        nids), self.sigma_time_embedding(nids)
                 else:
-                    mu_time_embdding, sigma_time_embdding = self.temporal_emb(nids, g)
+                    mu_time_embdding, sigma_time_embdding = self.temporal_emb(
+                        nids, g)
                     # mu_time_embdding, sigma_time_embdding = self.temporal_emb_mu(g, embedding), self.temporal_emb_sigma(g, embedding)
 
                 mu = mu_embedding + mu_time_embdding
@@ -177,17 +187,19 @@ class LinkPredict(nn.Module):
                 sigma = sigma_embedding
 
             if std == "yes":
-                gaussian_noise = torch.randn(self.pos_num_nodes + self.skill_num_nodes, self.h_dim).to(nids.device)[nids]
-                embedding = mu + gaussian_noise * torch.exp(sigma).to(nids.device)
+                gaussian_noise = torch.randn(
+                    self.pos_num_nodes + self.skill_num_nodes, self.h_dim).to(nids.device)[nids]
+                embedding = mu + gaussian_noise * \
+                    torch.exp(sigma).to(nids.device)
             else:
                 embedding = mu
 
         return embedding, (mu_embedding, sigma_embedding), (mu_time_embdding, sigma_time_embdding), (mu, sigma)
 
+    def forward(self, g, nids, triplets, labels=None, edge_labels=None, skill2cluster=None, std="yes", diff_labels=None):
+        embedding, (mu_embedding, sigma_embedding), (mu_time_embdding,
+                                                     sigma_time_embdding), (mu, sigma) = self.encoder(g, nids, std)
 
-    def forward(self, g, nids, triplets, labels=None, edge_labels=None, skill2cluster=None, std="yes", diff_labels=None):        
-        embedding, (mu_embedding, sigma_embedding), (mu_time_embdding, sigma_time_embdding), (mu, sigma) = self.encoder(g, nids, std)
-            
         # skill cluster constrastive learning
         if self.con_weight != 0:
             skill2labels = skill2cluster[nids[nids >= self.pos_num_nodes]]
@@ -206,6 +218,7 @@ class LinkPredict(nn.Module):
                 lp_loss = 0
             else:
                 lp_loss = F.binary_cross_entropy_with_logits(lp_score, labels)
+                # lp_loss = F.binary_cross_entropy(lp_score, edge_labels)
         else:
             lp_loss = 0
 
@@ -304,8 +317,10 @@ class LinkPredict(nn.Module):
             time_diff = self.fc_diff(s * r * o).squeeze(-1)
             diff_loss = nn.CrossEntropyLoss()(time_diff, diff_labels)
 
-        loss = self.lp_weight * lp_loss + self.reg_param * reg_loss + rg_loss * self.rg_weight + rank_loss * self.rank_weight + con_loss * self.con_weight + kl_loss + self.diff_weight * diff_loss
-    
+        loss = self.lp_weight * lp_loss + self.reg_param * reg_loss + rg_loss * self.rg_weight + \
+            rank_loss * self.rank_weight + con_loss * \
+            self.con_weight + kl_loss + self.diff_weight * diff_loss
+
         return ModelOutput(
             loss=loss,
             lp_loss=float(lp_loss),

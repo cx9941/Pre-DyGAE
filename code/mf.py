@@ -7,7 +7,7 @@ parser.add_argument('--e_dim', type=int, default=10)
 args = parser.parse_args()
 
 triplet_percentage = pd.read_csv(f'data/{args.data_name}/task2/old_triplet_percentage.tsv', header=None, sep='\t')
-entities = pd.read_csv(f'data/{args.data_name}/task2/entities.dict', header=None, sep='\t')
+entities = pd.read_csv(f'data/{args.data_name}/entities.dict', header=None, sep='\t')
 user_num = (entities[1]<30000).sum()
 item_num = (entities[1]>=30000).sum()
 matrix = torch.zeros(user_num, item_num)

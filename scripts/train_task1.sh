@@ -3,11 +3,11 @@ set -o errexit
 data=$1
 task=task1
 lp_weight=1.0
-num_epochs=2000
+num_epochs=1000
 owner_id=new
 time="no"
 
-for seed in $2
+for seed in 289 0 1 2 3 4 5 6 7 8 9 10
 do
 for k in $3
 do
@@ -46,7 +46,7 @@ python code/train_task1.py \
     --bias $bias \
     --cross_attn $cross_attn \
     --con_weight $con_weight \
-    --initial_embedding no \
+    --initial_embedding yes \
     --seed $seed \
     --time $time
 
@@ -69,7 +69,7 @@ python code/test_task1.py \
     --bias $bias \
     --cross_attn $cross_attn \
     --con_weight $con_weight \
-    --initial_embedding no \
+    --initial_embedding yes \
     --seed $seed \
     --time $time
 

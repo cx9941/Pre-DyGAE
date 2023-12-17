@@ -3,7 +3,7 @@ set -o errexit
 data=$1
 task=task1
 lp_weight=1.0
-num_epochs=2000
+num_epochs=1000
 owner_id=new
 time="no"
 

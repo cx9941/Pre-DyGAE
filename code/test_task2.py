@@ -16,9 +16,7 @@ from torchmetrics.regression import TweedieDevianceScore
 from torch_geometric_temporal.nn.recurrent import AGCRN
 
 if __name__ == "__main__":
-    # old_data = JDDataset(reverse=False, name=args.data_name, raw_dir=f'data/{args.data_name}/task1', train_path=args.old_triplet_path, eval_path=args.old_triplet_path, test_path=args.old_triplet_path)
-    # old_g = old_data[0]
-    data = JDDataset(reverse=False, name=args.data_name, raw_dir=f'data/{args.data_name}/{args.task}', train_path=args.train_path, eval_path=args.eval_path, test_path=args.test_path)
+    data = JDDataset(reverse=False, name=args.data_name, raw_dir=f'data/{args.data_name}', train_path=args.train_path, eval_path=args.eval_path, test_path=args.test_path)
     g = data[0]
     num_nodes = g.num_nodes()
     num_rels = data.num_rels
@@ -28,7 +26,7 @@ if __name__ == "__main__":
 
     if args.bias == 'yes':
         entity2embedding = torch.load(
-            f'data/{args.data_name}/{args.task}/entity2embedding.pt')
+            f'data/{args.data_name}/entity2embedding.pt')
     else:
         entity2embedding = None
 
