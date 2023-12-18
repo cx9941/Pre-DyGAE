@@ -7,7 +7,7 @@ num_epochs=1000
 owner_id=new
 time="no"
 
-for seed in 289 0 1 2 3 4 5 6 7 8 9 10
+for seed in 9 10
 do
 for k in $3
 do
@@ -57,8 +57,8 @@ python code/test_task1.py \
     --lp_weight $lp_weight \
     --rg_loss_fn $rg_loss_fn \
     --train_path data/$data/task1/train/triplet_percentage.tsv \
-    --test_path data/$data/task1/eval/triplet_percentage.tsv \
-    --eval_path data/$data/task1/test/triplet_percentage.tsv \
+    --test_path data/$data/task1/eval/filter_triplet_percentage.tsv \
+    --eval_path data/$data/task1/test/filter_triplet_percentage.tsv \
     --task $task \
     --k $k \
     --num_epochs $num_epochs \

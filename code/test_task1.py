@@ -13,6 +13,8 @@ from utils import calc_mrr
 import logging
 import torch.nn.functional as F
 from torchmetrics.regression import TweedieDevianceScore
+import pandas as pd
+
 
 if __name__ == "__main__":
     data = JDDataset(reverse=False, name=args.data_name,
@@ -20,8 +22,9 @@ if __name__ == "__main__":
     g = data[0]
     num_nodes = g.num_nodes()
     num_rels = data.num_rels
-    pos_num_nodes = (g.edges()[0].max() + 1).item()
-    skill_num_nodes = (g.edges()[1].max() - g.edges()[0].max()).item()
+    entities = pd.read_csv(f'data/{args.data_name}/entities.dict', sep='\t', header=None)
+    pos_num_nodes = (entities[1]<30000).sum()
+    skill_num_nodes = (entities[1]>=30000).sum()
 
     if args.bias == 'yes':
         entity2embedding = torch.load(

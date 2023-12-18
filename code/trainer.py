@@ -4,10 +4,11 @@ import dgl
 import dgl.nn as dglnn
 from dgl.dataloading import GraphDataLoader
 from graphSampler import SubgraphIterator
-from utils import calc_mrr, get_subset_g
+from utils import calc_mrr, get_subset_g, time_metric
 import os
 from tqdm import tqdm
 import logging
+from sklearn.metrics import roc_auc_score, precision_recall_curve, average_precision_score
 logger = logging.getLogger(__name__)
 
 
@@ -35,8 +36,8 @@ class Trainer:
         src, dst = g.edges()
         triplets = torch.stack([src, g.edata["etype"], dst], dim=1)
 
-        self.pos_num_nodes = (g.edges()[0].max() + 1)
-        self.skill_num_nodes = (g.edges()[1].max() - g.edges()[0].max())
+        self.pos_num_nodes = model.pos_num_nodes
+        self.skill_num_nodes = model.skill_num_nodes
 
         self.train_g = train_g
         self.eval_g = eval_g
@@ -127,15 +128,15 @@ class Trainer:
                         metric = self.evaluate()
                         # logger.info('Valid loss')
                         logger.info(metric)
-                        if best_mae < metric['mrr']:
-                            best_mae = metric['mrr']
+                        if best_mae < metric['MRR']:
+                            best_mae = metric['MRR']
                             if self.time == 'yes':
-                                if self.node_embedding_path:
-                                    torch.save((self.real_mu_embeddings, self.real_sigma_embeddings), self.node_embedding_path)
                                 if self.time_embedding_path:
                                     torch.save((self.real_mu_time_embeddings, self.real_sigma_time_embeddings), self.time_embedding_path)
                             else:
                                 self.save_model(step)
+                                if self.node_embedding_path:
+                                    torch.save((self.real_mu_embeddings, self.real_sigma_embeddings), self.node_embedding_path)
 
     def gain_time_embedding(self):
         model = self.model
@@ -200,94 +201,61 @@ class Trainer:
                     self.real_mu_time_embeddings = real_mu_time_embeddings
                     self.real_sigma_time_embeddings = real_sigma_time_embeddings
 
+                import copy
                 if self.time == 'yes':
-                    import copy
                     embed = copy.deepcopy(model.mu_embedding.weight)
                     embed[train_nids] = train_embed
-                    all_triplets_pos = torch.range(
-                        0, self.pos_num_nodes - 1).repeat_interleave(self.skill_num_nodes).unsqueeze(0)
-                    all_triplets_skill = torch.range(
-                        self.pos_num_nodes, self.skill_num_nodes + self.pos_num_nodes - 1).repeat(self.pos_num_nodes).unsqueeze(0)
-                    all_triplets_relation = torch.zeros(
-                        all_triplets_skill.shape[1]).unsqueeze(0)
-                    all_triplets = torch.cat(
-                        [all_triplets_pos, all_triplets_relation, all_triplets_skill], dim=0).T.long().to(embed.device)
-
-                    all_lp_score = model.calc_lp_score(embed, all_triplets)
-                    all_rg_score = model.calc_rg_score(embed, all_triplets)
-
-                    all_rg_matrix = torch.zeros(
-                        self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                    all_rg_matrix[all_triplets[:, 0], all_triplets[:,
-                                                                   2] - self.pos_num_nodes] = all_rg_score
-
-                    all_lp_matrix = torch.zeros(
-                        self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
-                    all_lp_matrix[all_triplets[:, 0], all_triplets[:,
-                                                                   2] - self.pos_num_nodes] = all_lp_score
-
-                    all_labels = torch.zeros(
-                        self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                    all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask]
-                               [:, 2] - self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(device)
-
-                    from utils import time_metric
-                    metric['regression'] = time_metric(
-                        all_labels, all_rg_matrix)
-                    metric['link_prediction'] = time_metric(
-                        all_labels, all_lp_matrix)
-                    metric['mrr'] = max(
-                        metric['regression']['MRR'], metric['link_prediction']['MRR'])
-                    logger.info(metric)
                 else:
                     embed = train_embed
-                    mrr = calc_mrr(embed, model.w_relation,
-                                   self.eval_mask, self.triplets, batch_size=500)
-                    rg_score = model.calc_rg_score(
-                        embed, self.triplets[self.eval_mask])
-                    mae = model.calc_metrics(
-                        rg_score, self.eval_g.edata['edge_labels'].to(device))
-                    metric.update(mrr['tail'])
-                    metric.update(mae)
+                all_triplets_pos = torch.range(
+                    0, self.pos_num_nodes - 1).repeat_interleave(self.skill_num_nodes).unsqueeze(0)
+                all_triplets_skill = torch.range(
+                    self.pos_num_nodes, self.skill_num_nodes + self.pos_num_nodes - 1).repeat(self.pos_num_nodes).unsqueeze(0)
+                all_triplets_relation = torch.zeros(
+                    all_triplets_skill.shape[1]).unsqueeze(0)
+                all_triplets = torch.cat(
+                    [all_triplets_pos, all_triplets_relation, all_triplets_skill], dim=0).T.long().to(embed.device)
 
-                    if mode == 'test':
-                        M = self.pos_num_nodes
-                        N = self.skill_num_nodes
-                        first_column = torch.arange(
-                            M, dtype=torch.int32).repeat_interleave(N).view(-1, 1)
-                        second_column = torch.zeros(
-                            (N * M, 1), dtype=torch.int32)
-                        third_column = torch.arange(
-                            M, N + M, dtype=torch.int32).repeat(M, 1).view(-1, 1)
-                        result_tensor = torch.cat(
-                            (first_column, second_column, third_column), dim=1)
-                        score = model.calc_lp_score(
-                            embed, result_tensor).reshape(M, N)
-                        all_lp_score = model.calc_lp_score(
-                            embed, result_tensor).reshape(M, N)
+                all_lp_score = model.calc_lp_score(embed, all_triplets)
+                all_rg_score = model.calc_rg_score(embed, all_triplets)
 
-                        # torch.save(score, self.results_path)
-                        # torch.save(rg_score, self.scores_path)
-                        # torch.save(all_rg_score, self.scores_path)
+                all_rg_matrix = torch.zeros(
+                    self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
+                all_rg_matrix[all_triplets[:, 0], all_triplets[:,
+                                                                2] - self.pos_num_nodes] = all_rg_score
 
-                        # test AUC
-                        neg_mask = torch.ones(all_lp_score.shape).to(
-                            self.device).long()
-                        neg_mask[self.triplets[:, 0],
-                                 self.triplets[:, 2] - self.pos_num_nodes] = 0
-                        neg_score = all_lp_score[neg_mask.nonzero()[:, 0], neg_mask.nonzero()[
-                            :, 1]]
-                        pos_score = all_lp_score[self.triplets[self.test_mask][:, 0],
-                                                 self.triplets[self.test_mask][:, 2] - self.pos_num_nodes]
-                        from sklearn.metrics import roc_auc_score
-                        y = torch.cat([torch.ones(pos_score.shape, dtype=torch.long), torch.zeros(
-                            neg_score.shape, dtype=torch.long)]).numpy()
-                        pred = torch.cat([pos_score, neg_score]
-                                         ).detach().cpu().numpy()
-                        auc = roc_auc_score(y, pred)
-                        metric['AUC'] = auc
-                        logger.info(metric)
-        return metric
+                all_lp_matrix = torch.zeros(
+                    self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
+                all_lp_matrix[all_triplets[:, 0], all_triplets[:,
+                                                                2] - self.pos_num_nodes] = all_lp_score
+
+                all_labels = torch.zeros(
+                    self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
+                all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask]
+                            [:, 2] - self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(device)
+                
+                if self.time == 'no':
+                    all_labels = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
+                    all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask][:, 2] - self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(all_lp_score.device)
+
+                    all_lp_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
+                    all_lp_matrix[all_triplets[:, 0], all_triplets[:,2] - self.pos_num_nodes] = torch.nn.Sigmoid()(all_lp_score)
+                    all_lp_matrix[self.triplets[self.train_mask | self.test_mask][:, 0], self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
+
+                    all_rg_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
+                    all_rg_matrix[all_triplets[:, 0], all_triplets[:,2] - self.pos_num_nodes] = all_rg_score
+                    all_rg_matrix[self.triplets[self.train_mask | self.test_mask][:, 0], self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
+
+                metric['regression'] = time_metric(
+                    all_labels, all_rg_matrix)
+                metric['link_prediction'] = time_metric(
+                    all_labels, all_lp_matrix)
+                metric['mrr'] = max(
+                    metric['regression']['MRR'], metric['link_prediction']['MRR'])
+                final_metric = {m:metric['link_prediction'][m] for m in ['AUC', 'Hits@1', 'Hits@3', "MRR"]}
+                final_metric.update({m:metric['regression'][m] for m in ['EGM', 'MAE','MAPE', "RMSE"]})
+                logger.info(final_metric)
+        return final_metric
 
     def save_model(self, step):
         torch.save(self.model.state_dict(), self.checkpoint_path)

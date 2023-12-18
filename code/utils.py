@@ -6,7 +6,7 @@ from tqdm import tqdm
 from scipy.stats import pearsonr, spearmanr, gmean
 from torchmetrics.regression import TweedieDevianceScore
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score, mean_absolute_error, mean_absolute_percentage_error
+from sklearn.metrics import roc_auc_score, mean_absolute_error, mean_absolute_percentage_error, average_precision_score
 import numpy as np
 
 def get_subset_g(g, mask, num_rels, bidirected=False):
@@ -277,7 +277,6 @@ def rg_cal_mrr(pred, label):
                 ranked_indices = np.argsort(-filter_score)
                 rank = np.where(ranked_indices == i)[0][0] + 1  # +1因为排名从1开始
                 mrr_sum += 1 / rank  # 计算倒数排名并累加
-                mrr_sum += 1 / rank  # 计算倒数排名并累加
                 # 计算Hits@N
                 for n in [1,3,5]:
                     if rank <= n:
@@ -298,12 +297,20 @@ def cal_auc(pred, label):
     auc = roc_auc_score(label, pred)
     return auc
 
+def cal_ap(pred, label):
+    pred, label = pred.view(-1), label.view(-1)
+    pred = pred.detach().cpu().numpy()
+    label = label.detach().cpu().numpy()
+    ap = average_precision_score(label, pred)
+    return ap
+
 def time_metric(y, y_hat):
     label = torch.zeros(y.shape).to(y.device)
     label[y!=0] = 1
     label = label.long()
     metrics = rg_cal_mrr(y_hat, label)
     metrics['AUC'] = cal_auc(y_hat, label)
+    metrics['AP'] = cal_ap(y_hat, label)
     metrics['MAE'] = mean_absolute_error(y[y!=0].detach().cpu().numpy(), y_hat[y!=0].detach().cpu().numpy())
     metrics['RMSE'] = torch.sqrt(nn.MSELoss()(y[y!=0], y_hat[y!=0])).item()
     metrics['MAPE'] = mean_absolute_percentage_error(y[y!=0].detach().cpu().numpy(), y_hat[y!=0].detach().cpu().numpy())
