@@ -217,6 +217,23 @@ class TweedieLoss(nn.Module):
         loss = -(y_true * torch.log(y_pred) - y_pred ** self.power) / self.power
         return loss.mean()
 
+class TweedieLossWithWeight(nn.Module):
+    def __init__(self, power):
+        super(TweedieLossWithWeight, self).__init__()
+        self.power = power
+
+    def forward(self, y_true, y_pred):
+        # 确保预测值非负
+        y_pred = torch.clamp(y_pred, min=1e-6)
+        
+        # 计算原始的 Tweedie Loss
+        loss = -(y_true * torch.log(y_pred) - y_pred ** self.power) / self.power
+        
+        # 添加自适应权重
+        weights = torch.where(y_true > 0.5, torch.tensor(2.0), torch.tensor(1.0))  # 根据实际情况调整权重
+        weighted_loss = weights * loss
+
+        return weighted_loss.mean()
 
 def info_nce_loss(embeddings, labels, temperature=1.0):
     """
@@ -324,3 +341,14 @@ def time_metric(y, y_hat):
     metrics['MAPE'] = mean_absolute_percentage_error(y[y!=0].detach().cpu().numpy(), y_hat[y!=0].detach().cpu().numpy())
     metrics['EGM'] = error_geometric_mean(y_hat[y!=0], y[y!=0]).item()
     return metrics
+
+
+class CustomLoss(nn.Module):
+    def __init__(self):
+        super(CustomLoss, self).__init__()
+
+    def forward(self, y_true, y_pred):
+        # 设计一个加权损失函数，根据y_true的值来动态调整权重
+        weights = torch.where(y_true > 0.5, torch.tensor(2.0), torch.tensor(1.0))  # 根据实际情况调整权重
+        loss = torch.mean(weights * (y_true - y_pred)**2)
+        return loss

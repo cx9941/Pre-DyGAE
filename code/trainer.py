@@ -118,14 +118,14 @@ class Trainer:
                         model.parameters(), max_norm=1.0)  # clip gradients
                     optimizer.step()
                     bar.set_description(
-                        f"loss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
+                        f"loss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rg_loss_pos:{outputs.rg_loss_pos}, rg_loss_neg:{outputs.rg_loss_neg}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
                     if step % self.eval_step == 0:
                         logger.info(f"epoch {epoch},step {step}")
                         # metric = self.evaluate(self.test_g, self.test_mask, self.test_nids, mode='test')
                         # logger.info('Test loss')
                         # logger.info(metric)
                         logger.info(
-                            f"Trainloss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
+                            f"Trainloss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rg_loss_pos:{outputs.rg_loss_pos}, rg_loss_neg:{outputs.rg_loss_neg}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
                         metric = self.evaluate()
                         # logger.info(metric)
                         if best_mae < metric['MRR'] or (best_mae <= metric['MRR'] and best_loss > outputs.loss):

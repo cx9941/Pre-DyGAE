@@ -48,8 +48,6 @@ if __name__ == "__main__":
         "leakyrelu": nn.LeakyReLU()
     }
 
-    
-
     model = LinkPredict(num_nodes, pos_num_nodes, skill_num_nodes, num_rels, cross_attn=args.cross_attn, time=args.time, embedding=entity2embedding,
                         rg_weight=args.rg_weight, lp_weight=args.lp_weight, rank_weight=args.rank_weight, con_weight=args.con_weight, diff_weight=args.diff_weight,
                         gaussian=args.gaussian, bias=args.bias, initial_embedding=args.initial_embedding, e_dim=args.e_dim, adaptive=args.adaptive,

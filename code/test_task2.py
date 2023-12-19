@@ -54,7 +54,8 @@ if __name__ == "__main__":
                         gaussian=args.gaussian, bias=args.bias, initial_embedding=args.initial_embedding, e_dim=args.e_dim,
                         rg_loss_fn=rg_loss_fn[args.rg_loss_fn], rg_activate_fn=rg_activate_fn[args.rg_activate_fn], real_id_nodes=real_id_nodes).to(args.device)
 
-    model.load_state_dict(torch.load(args.load_state_path), strict=False)
+    if args.load_state_path:
+        model.load_state_dict(torch.load(args.load_state_path), strict=False)
     model.load_node_embedding(*torch.load(args.load_node_embedding_path))
     model.temporal_emb.load_emb_graph(graph_inital_emb)
     model.load_node_temporal_embedding(*torch.load(args.load_time_embedding_path))

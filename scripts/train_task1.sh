@@ -7,7 +7,7 @@ num_epochs=1000
 owner_id=new
 time="no"
 
-for seed in 9 10
+for seed in 0 1 2 3 4 5 6 7 8 9 10
 do
 for k in $3
 do

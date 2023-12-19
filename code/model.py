@@ -115,11 +115,11 @@ class LinkPredict(nn.Module):
         s = input_embed[row_indices]
         r = self.w_relation[triplets[:, 1]]
         o = input_embed[col_indices]
-        s = self.feedback(s)
-        r = self.feedback(r)
-        o = self.feedback(o)
-        rg_origin_score = (s * r * o).sum(dim=-1)
-        # rg_origin_score = self.fc_rg(s * r * o).squeeze(-1)
+        # s = self.feedback(s)
+        # r = self.feedback(r)
+        # o = self.feedback(o)
+        # rg_origin_score = (s * r * o).sum(dim=-1)
+        rg_origin_score = self.fc_rg(s * r * o).squeeze(-1)
         rg_score = self.rg_activate_fn(rg_origin_score)
         return rg_score
 
@@ -225,7 +225,12 @@ class LinkPredict(nn.Module):
         # regression loss
         if self.rg_weight != 0:
             rg_score = self.calc_rg_score(embedding, triplets)
-            rg_loss = self.rg_loss_fn(rg_score, edge_labels)
+            # rg_loss = self.rg_loss_fn(rg_score, edge_labels)
+            rg_loss_pos = self.rg_loss_fn(
+                rg_score[edge_labels != 0], edge_labels[edge_labels != 0])
+            rg_loss_neg = self.rg_loss_fn(
+                rg_score[edge_labels == 0], edge_labels[edge_labels == 0])
+            rg_loss = rg_loss_pos + rg_loss_neg
         else:
             rg_loss = 0
 
@@ -286,6 +291,8 @@ class LinkPredict(nn.Module):
             loss=loss,
             lp_loss=float(lp_loss),
             rg_loss=float(rg_loss),
+            rg_loss_pos=float(rg_loss_pos),
+            rg_loss_neg=float(rg_loss_neg),
             con_loss=float(con_loss),
             rank_loss=float(rank_loss),
             kl_loss=float(kl_loss),

@@ -57,7 +57,7 @@ args.identity = f"rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgwe
 if args.time == "yes":
     assert args.task == 'task2'
     if args.task2_abalation == 'yes':
-        args.identity += "_abalation"
+        args.identity += f"/diffweight_{args.diff_weight}_adaptive_{args.adaptive}_abalation"
     else:
         args.root_dir = args.load_state_path.split('/')[-2] + '/' + args.load_state_path.split('/')[-1][:-3]
         args.identity = f"/epoch_{args.num_epochs}_k_{args.k}_lr_{args.lr}_initalembed_{args.initial_embedding}_seed_{args.seed}/rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}/diffweight_{args.diff_weight}_adaptive_{args.adaptive}"
