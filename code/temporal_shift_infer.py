@@ -66,7 +66,6 @@ if __name__ == '__main__':
     parser.add_argument("--time_seed", type=int, default=10)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--temperature", type=float, default=10)
-    parser.add_argument("--dir_name", type=str, default='epoch_500_k_1_lr_0.0001_initalembed_no_seed_10')
     parser.add_argument("--file_name", type=str, default='rglossfn_tweedie_activate_softplus_rgweight_100.0_lpweight_1.0_rankweight_0.0_conweight_0.0_diffweight_1.0_gaussian_yes_crossattn_yes_bias_yes_node')
     parser.add_argument("--save_file_name", type=str, default='rglossfn_tweedie_activate_softplus_rgweight_100.0_lpweight_1.0_rankweight_0.0_conweight_0.0_diffweight_1.0_gaussian_yes_crossattn_yes_bias_yes_node')
     time_args = parser.parse_args()
@@ -81,7 +80,7 @@ if __name__ == '__main__':
     mu_embeddings = []
     sigma_embeddings = []
     for month in range(time_args.start_date, time_args.end_date):
-        file_path = f'outputs/{time_args.owner_id}_{time_args.shift_type}_embedding/task2/{time_args.data_name}/train/{month}/{time_args.dir_name}/{time_args.file_name}.pt'
+        file_path = f'outputs/{time_args.owner_id}_{time_args.shift_type}_embedding/task2/{time_args.data_name}/train/{month}/{time_args.file_name}.pt'
         mu_embedding, sigma_embedding = torch.load(file_path)
         mu_embeddings.append(mu_embedding.unsqueeze(0))
         sigma_embeddings.append(sigma_embedding.unsqueeze(0))
@@ -117,8 +116,7 @@ if __name__ == '__main__':
         _, test_predicted_next_step, _, _ = model(train_data)
         test_mu_embedding = test_predicted_next_step[-1]
     test_sigma_embedding = torch.mean(sigma_embeddings, dim=0)
-    dir_path = f'outputs/{time_args.owner_id}_{time_args.shift_type}_embedding/task2/{time_args.data_name}/test/{time_args.end_date}/{time_args.dir_name}/{time_args.file_name}_{time_args.strategy}'
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    save_file_path = f'{dir_path}/{time_args.save_file_name}.pt'
+    save_file_path = f'outputs/{time_args.owner_id}_{time_args.shift_type}_embedding/task2/{time_args.data_name}/test/{time_args.end_date}/{time_args.save_file_name}.pt'
+    if not os.path.exists('/'.join(save_file_path.split('/')[:-1])):
+        os.makedirs('/'.join(save_file_path.split('/')[:-1]))
     torch.save((test_mu_embedding, test_sigma_embedding), save_file_path)

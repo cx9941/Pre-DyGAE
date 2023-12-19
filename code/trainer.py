@@ -127,7 +127,7 @@ class Trainer:
                         logger.info(
                             f"Trainloss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
                         metric = self.evaluate()
-                        logger.info(metric)
+                        # logger.info(metric)
                         if best_mae < metric['MRR'] or (best_mae <= metric['MRR'] and best_loss > outputs.loss):
                             best_mae = metric['MRR']
                             best_loss = outputs.loss

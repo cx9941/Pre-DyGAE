@@ -12,9 +12,12 @@ parser.add_argument("--data_name", default="Dai", type=str)
 parser.add_argument("--task", default="task1", type=str)
 parser.add_argument("--rg_loss_fn", default="tweedie", type=str)
 parser.add_argument("--device", default="cuda", type=str)
-parser.add_argument("--train_path", default="data/Dai/task1/train/triplet_percentage.tsv", type=str)
-parser.add_argument("--test_path", default="data/Dai/task1/test/triplet_percentage.tsv", type=str)
-parser.add_argument("--eval_path", default="data/Dai/task1/eval/triplet_percentage.tsv", type=str)
+parser.add_argument(
+    "--train_path", default="data/Dai/task1/train/triplet_percentage.tsv", type=str)
+parser.add_argument(
+    "--test_path", default="data/Dai/task1/test/triplet_percentage.tsv", type=str)
+parser.add_argument(
+    "--eval_path", default="data/Dai/task1/eval/triplet_percentage.tsv", type=str)
 parser.add_argument("--mode", default="train", type=str)
 parser.add_argument("--time", default="no", type=str)
 parser.add_argument("--fix_emb", default="no", type=str)
@@ -52,13 +55,12 @@ args.root_dir = f"epoch_{args.num_epochs}_k_{args.k}_lr_{args.lr}_initalembed_{a
 
 args.identity = f"rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}"
 if args.time == "yes":
-    args.identity = f"rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_diffweight_{args.diff_weight}_adaptive_{args.adaptive}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}"
-    # args.identity += "_time_shift"
     assert args.task == 'task2'
     if args.task2_abalation == 'yes':
-        args.identity = f"rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_diffweight_{args.diff_weight}_adaptive_{args.adaptive}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}_abalation"
-
-
+        args.identity += "_abalation"
+    else:
+        args.root_dir = args.load_state_path.split('/')[-2] + '/' + args.load_state_path.split('/')[-1][:-3]
+        args.identity = f"/epoch_{args.num_epochs}_k_{args.k}_lr_{args.lr}_initalembed_{args.initial_embedding}_seed_{args.seed}/rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}/diffweight_{args.diff_weight}_adaptive_{args.adaptive}"
 
 random.seed(args.seed)
 os.environ['PYTHONHASHSEED'] = str(args.seed)
@@ -79,21 +81,19 @@ if args.time == 'yes':
     args.checkpoint_path += f"{args.date}/"
     args.node_embedding_path += f"{args.date}/"
 
-
     args.old_triplet_path = f'data/{args.data_name}/task2/old_triplet_percentage.tsv'
-    
+
     if args.mode == 'test':
         if len(args.load_time_embedding_path.split('/')) > 8:
             time_identify = args.load_time_embedding_path.split('/')[-1][:-3]
             args.identity += f"_{args.task2_strategy}_{time_identify}"
 
     args.time_embedding_path = f"outputs/{args.owner_id}_time_embedding/{args.task}/{args.data_name}/{args.mode}/{args.date}/"
-    args.time_embedding_path += args.root_dir 
-    if not os.path.exists(args.time_embedding_path):
-        os.makedirs(args.time_embedding_path)
+    args.time_embedding_path += args.root_dir
     args.time_embedding_path += args.identity + "_node.pt"
     args.graph_inital_emb_path = f"data/{args.data_name}/task2/graph_initial_emb_dim_{args.e_dim}.pt"
-        
+    if not os.path.exists('/'.join(args.time_embedding_path.split('/')[:-1])):
+        os.makedirs('/'.join(args.time_embedding_path.split('/')[:-1]))
 
 
 args.checkpoint_path += args.root_dir
@@ -102,21 +102,6 @@ args.results_path += args.root_dir
 args.scores_path += args.root_dir
 args.node_embedding_path += args.root_dir
 
-
-
-
-if not os.path.exists(args.checkpoint_path):
-    os.makedirs(args.checkpoint_path)
-if not os.path.exists(args.log_path):
-    os.makedirs(args.log_path)
-if not os.path.exists(args.results_path):
-    os.makedirs(args.results_path)
-if not os.path.exists(args.scores_path):
-    os.makedirs(args.scores_path)
-if not os.path.exists(args.node_embedding_path):
-    os.makedirs(args.node_embedding_path)
-
-    
 
 args.checkpoint_path += args.identity + ".pt"
 
@@ -131,6 +116,21 @@ args.scores_path += args.identity + ".pt"
 args.node_embedding_path += args.identity + "_node.pt"
 
 
+if not os.path.exists('/'.join(args.checkpoint_path.split('/')[:-1])):
+    os.makedirs('/'.join(args.checkpoint_path.split('/')[:-1]))
+
+if not os.path.exists('/'.join(args.log_path.split('/')[:-1])):
+    os.makedirs('/'.join(args.log_path.split('/')[:-1]))
+
+if not os.path.exists('/'.join(args.results_path.split('/')[:-1])):
+    os.makedirs('/'.join(args.results_path.split('/')[:-1]))
+
+if not os.path.exists('/'.join(args.scores_path.split('/')[:-1])):
+    os.makedirs('/'.join(args.scores_path.split('/')[:-1]))
+
+if not os.path.exists('/'.join(args.node_embedding_path.split('/')[:-1])):
+    os.makedirs('/'.join(args.node_embedding_path.split('/')[:-1]))
+    
 
 # Setup logging
 logging.basicConfig(

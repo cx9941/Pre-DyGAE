@@ -95,7 +95,7 @@ python code/train_task2.py \
     --date $month \
     --load_state_path outputs/${owner_id}_checkpoints/task2/$data/epoch_${task1_num_epochs}_k_${task1_k}_lr_${task1_lr}_initalembed_yes_seed_$task1_seed/rglossfn_${task1_rg_loss_fn}_activate_softplus_rgweight_${task1_rg_weight}_lpweight_${task1_lp_weight}_rankweight_${task1_rank_weight}_conweight_${task1_con_weight}_gaussian_yes_crossattn_${task1_bias}_bias_${task1_bias}.pt \
     --load_node_embedding_path outputs/${owner_id}_node_embedding/task2/$data/train/epoch_${task1_num_epochs}_k_${task1_k}_lr_${task1_lr}_initalembed_yes_seed_$task1_seed/rglossfn_${task1_rg_loss_fn}_activate_softplus_rgweight_${task1_rg_weight}_lpweight_${task1_lp_weight}_rankweight_${task1_rank_weight}_conweight_${task1_con_weight}_gaussian_yes_crossattn_${task1_bias}_bias_${task1_bias}_node.pt \
-    --load_time_embedding_path outputs/${owner_id}_time_embedding/task2/$data/train/$month/epoch_${num_epochs}_k_${k}_lr_${task2_lr}_initalembed_yes_seed_$seed/rglossfn_tweedie_activate_softplus_rgweight_${rg_weight}_lpweight_${lp_weight}_rankweight_${rank_weight}_conweight_0.0_diffweight_${diff_weight}_adaptive_${adaptive}_gaussian_yes_crossattn_yes_bias_yes_node.pt \
+    --load_time_embedding_path outputs/${owner_id}_time_embedding/task2/$data/train/$month/epoch_${num_epochs}_k_${k}_lr_${task2_lr}_initalembed_yes_seed_$seed/rglossfn_${task1_rg_loss_fn}_activate_softplus_rgweight_${task1_rg_weight}_lpweight_${task1_lp_weight}_rankweight_${task1_rank_weight}_conweight_${task1_con_weight}_gaussian_yes_crossattn_${task1_bias}_bias_${task1_bias}/rglossfn_tweedie_activate_softplus_rgweight_${rg_weight}_lpweight_${lp_weight}_rankweight_${rank_weight}_conweight_0.0_diffweight_${diff_weight}_adaptive_${adaptive}_gaussian_yes_crossattn_yes_bias_yes_node.pt \
     --fix_model yes \
     --con_weight 0.0 \
     --rank_weight $rank_weight \
@@ -155,7 +155,8 @@ python code/test_task2.py \
     --diff_weight $diff_weight \
     --rg_loss_fn tweedie \
     --rg_activate_fn softplus \
-    --e_dim $e_dim
+    --e_dim $e_dim \
+    --time_seed $time_seed 
 done
 done
 done
