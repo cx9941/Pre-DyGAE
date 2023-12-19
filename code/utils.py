@@ -269,19 +269,16 @@ def rg_cal_mrr(pred, label):
     for user in range(M):
         for i in range(N):
             if label[user, i] == 1:
-                # 计算该正样本的排名
                 import copy
                 filter_score = copy.deepcopy(pred[user])
                 filter_score[label[user].nonzero()[0]] = filter_score.min() - 1
                 filter_score[i] = pred[user][i]
                 ranked_indices = np.argsort(-filter_score)
-                rank = np.where(ranked_indices == i)[0][0] + 1  # +1因为排名从1开始
-                mrr_sum += 1 / rank  # 计算倒数排名并累加
-                # 计算Hits@N
+                rank = np.where(ranked_indices == i)[0][0] + 1  
+                mrr_sum += 1 / rank  
                 for n in [1,3,5]:
                     if rank <= n:
                         hits_at_n[n] += 1
-    # 计算MRR的结果
     mrr = mrr_sum / label.sum()
     metric = {
         "MRR": mrr,
@@ -304,6 +301,16 @@ def cal_ap(pred, label):
     ap = average_precision_score(label, pred)
     return ap
 
+def cal_smape(pred, label):
+    pred, label = pred.view(-1), label.view(-1)
+    pred = pred.detach().cpu().numpy()
+    label = label.detach().cpu().numpy()
+    denominator = (np.abs(label) + np.abs(pred)) / 2.0
+    diff = np.abs(label - pred) / denominator
+    diff[denominator == 0] = 0  # Handle the case where label + pred is zero
+    smape = np.mean(diff)
+    return smape
+
 def time_metric(y, y_hat):
     label = torch.zeros(y.shape).to(y.device)
     label[y!=0] = 1
@@ -311,6 +318,7 @@ def time_metric(y, y_hat):
     metrics = rg_cal_mrr(y_hat, label)
     metrics['AUC'] = cal_auc(y_hat, label)
     metrics['AP'] = cal_ap(y_hat, label)
+    metrics['SMAPE'] = cal_smape(y_hat, label)
     metrics['MAE'] = mean_absolute_error(y[y!=0].detach().cpu().numpy(), y_hat[y!=0].detach().cpu().numpy())
     metrics['RMSE'] = torch.sqrt(nn.MSELoss()(y[y!=0], y_hat[y!=0])).item()
     metrics['MAPE'] = mean_absolute_percentage_error(y[y!=0].detach().cpu().numpy(), y_hat[y!=0].detach().cpu().numpy())

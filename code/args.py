@@ -28,13 +28,14 @@ parser.add_argument("--num_epochs", default=10000, type=int)
 parser.add_argument("--eval_step", default=50, type=int)
 parser.add_argument("--e_dim", default=10, type=int)
 parser.add_argument("--sample_size", default=3000, type=int)
-parser.add_argument("--lr", default=1e-4, type=float)
+parser.add_argument("--lr", default=0.0001, type=float)
 parser.add_argument("--rg_weight", default=100.0, type=float)
 parser.add_argument("--lp_weight", default=1.0, type=float)
 parser.add_argument("--rank_weight", default=0.1, type=float)
 parser.add_argument("--con_weight", default=0.05, type=float)
 parser.add_argument("--diff_weight", default=1.0, type=float)
 parser.add_argument("--seed", default=10, type=int)
+parser.add_argument("--time_seed", default=-1, type=int)
 parser.add_argument("--k", default=10, type=int)
 parser.add_argument("--initial_embedding", default="yes", type=str)
 parser.add_argument("--date", default=1, type=int)
@@ -44,6 +45,7 @@ parser.add_argument("--load_time_embedding_path", default=None, type=str)
 parser.add_argument("--start_date", default=None, type=int)
 parser.add_argument("--task2_strategy", default="last", type=str)
 parser.add_argument("--adaptive", default="yes", type=str)
+parser.add_argument("--task2_abalation", default="no", type=str)
 args = parser.parse_args()
 
 args.root_dir = f"epoch_{args.num_epochs}_k_{args.k}_lr_{args.lr}_initalembed_{args.initial_embedding}_seed_{args.seed}/"
@@ -53,6 +55,9 @@ if args.time == "yes":
     args.identity = f"rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_diffweight_{args.diff_weight}_adaptive_{args.adaptive}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}"
     # args.identity += "_time_shift"
     assert args.task == 'task2'
+    if args.task2_abalation == 'yes':
+        args.identity = f"rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_diffweight_{args.diff_weight}_adaptive_{args.adaptive}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}_abalation"
+
 
 
 random.seed(args.seed)
@@ -114,7 +119,13 @@ if not os.path.exists(args.node_embedding_path):
     
 
 args.checkpoint_path += args.identity + ".pt"
-args.log_path += args.identity + ".log"
+
+if args.time_seed != -1:
+    assert args.time == 'yes' and args.task == 'task2'
+    args.log_path += args.identity + f"_time_seed_{args.time_seed}.log"
+else:
+    args.log_path += args.identity + ".log"
+
 args.results_path += args.identity + ".pt"
 args.scores_path += args.identity + ".pt"
 args.node_embedding_path += args.identity + "_node.pt"

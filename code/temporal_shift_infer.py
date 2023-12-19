@@ -59,6 +59,7 @@ if __name__ == '__main__':
     parser.add_argument("--data_name", type=str, default='Man')
     parser.add_argument("--owner_id", type=str, default='new')
     parser.add_argument("--strategy", type=str, default='avg')
+    parser.add_argument("--shift_type", type=str, default='time')
     parser.add_argument("--epochs", type=int, default=1000)
     parser.add_argument("--start_date", type=int, default=4)
     parser.add_argument("--end_date", type=int, default=8)
@@ -80,7 +81,7 @@ if __name__ == '__main__':
     mu_embeddings = []
     sigma_embeddings = []
     for month in range(time_args.start_date, time_args.end_date):
-        file_path = f'outputs/{time_args.owner_id}_time_embedding/task2/{time_args.data_name}/train/{month}/{time_args.dir_name}/{time_args.file_name}.pt'
+        file_path = f'outputs/{time_args.owner_id}_{time_args.shift_type}_embedding/task2/{time_args.data_name}/train/{month}/{time_args.dir_name}/{time_args.file_name}.pt'
         mu_embedding, sigma_embedding = torch.load(file_path)
         mu_embeddings.append(mu_embedding.unsqueeze(0))
         sigma_embeddings.append(sigma_embedding.unsqueeze(0))
@@ -116,7 +117,7 @@ if __name__ == '__main__':
         _, test_predicted_next_step, _, _ = model(train_data)
         test_mu_embedding = test_predicted_next_step[-1]
     test_sigma_embedding = torch.mean(sigma_embeddings, dim=0)
-    dir_path = f'outputs/{time_args.owner_id}_time_embedding/task2/{time_args.data_name}/test/{time_args.end_date}/{time_args.dir_name}/{time_args.file_name}_{time_args.strategy}'
+    dir_path = f'outputs/{time_args.owner_id}_{time_args.shift_type}_embedding/task2/{time_args.data_name}/test/{time_args.end_date}/{time_args.dir_name}/{time_args.file_name}_{time_args.strategy}'
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     save_file_path = f'{dir_path}/{time_args.save_file_name}.pt'

@@ -232,45 +232,6 @@ class LinkPredict(nn.Module):
         # reg_loss
         reg_loss = self.regularization_loss(embedding)
 
-        # ## extra test
-        # from utils import time_metric
-        # from sklearn.metrics import roc_auc_score
-        # device = "cpu"
-        # self = self.to(device)
-        # gold_triplets = torch.load('gold_triplets.pt')
-        # gold_labels = torch.load('gold_labels.pt')
-        # embed = torch.randn(self.num_nodes, 768)
-        # embed[nids] = embedding.to(device)
-        # all_triplets_pos = torch.range(0, self.pos_num_nodes - 1).repeat_interleave(self.skill_num_nodes).unsqueeze(0)
-        # all_triplets_skill = torch.range(self.pos_num_nodes, self.skill_num_nodes + self.pos_num_nodes - 1).repeat(self.pos_num_nodes).unsqueeze(0)
-        # all_triplets_relation = torch.zeros(all_triplets_skill.shape[1]).unsqueeze(0)
-        # all_triplets = torch.cat([all_triplets_pos, all_triplets_relation, all_triplets_skill], dim=0).T.long().to(device)
-        # all_lp_score = self.calc_lp_score(embed, all_triplets)
-        # all_rg_score = self.calc_rg_score(embed, all_triplets)
-        # all_rg_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-        # all_rg_matrix[all_triplets[:,0], all_triplets[:,2] - self.pos_num_nodes] = all_rg_score
-        # all_lp_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
-        # all_lp_matrix[all_triplets[:,0], all_triplets[:,2] - self.pos_num_nodes] = all_lp_score
-        # all_labels = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-        # all_labels[gold_triplets[:,0], gold_triplets[:,2] - self.pos_num_nodes] = gold_labels.to(device)
-        # metric = time_metric(all_labels, all_rg_matrix)
-        # temp1_rg_score = all_rg_matrix[gold_triplets[:,0], gold_triplets[:,2] - self.pos_num_nodes]
-        # temp2_rg_score = rg_score[edge_labels!=0]
-        # temp1_auc = roc_auc_score(edge_labels.int().detach().cpu().numpy(), rg_score.detach().cpu().numpy())
-        # temp2_auc = roc_auc_score((all_labels!=0).view(-1).int().detach().cpu().numpy(), all_rg_matrix.view(-1).detach().cpu().numpy())
-        # ori_src, ori_dst = torch.load('ori_index.pt')
-        # ori_src, ori_dst = ori_src.cpu(), ori_dst.cpu()
-        # ori_src.unique()
-        # import copy
-        # real_triplets = copy.deepcopy(triplets)
-        # real_triplets[:,0] = ori_src.unique()[triplets[:,0].cpu()]
-        # real_triplets[:,2] = ori_dst.unique()[(triplets[:,2] - triplets[:,2].min()).cpu()]
-        # ori_src.unique()[triplets[:,0].cpu()]
-
-        # real_preds = all_rg_matrix[real_triplets[:,0].cpu(), real_triplets[:,2].cpu() - self.pos_num_nodes]
-        # roc_auc_score(edge_labels.int().detach().cpu().numpy(), real_preds.detach().cpu().numpy())
-        # ## extra test end
-
         # rankingloss
         if self.rank_weight != 0:
             criterion = nn.MarginRankingLoss(margin=1.0)
@@ -332,14 +293,14 @@ class LinkPredict(nn.Module):
             embedding=embedding,
         )
 
-    def calc_metrics(self, edge_scores, edge_labels):
-        from utils import error_geometric_mean
-        metrics = {
-            "MAE": F.l1_loss(edge_scores, edge_labels).item(),
-            "MAPE": mean_absolute_percentage_error(edge_labels.detach().cpu().numpy(), edge_scores.detach().cpu().numpy()),
-            "RMSE": torch.sqrt(F.mse_loss(edge_scores, edge_labels)).item(),
-            "R2": r2_score(edge_labels.detach().cpu().numpy(), edge_scores.detach().cpu().numpy()),
-            "KL": F.kl_div(edge_scores, edge_labels).item(),
-            "EGM": error_geometric_mean(edge_scores, edge_labels).item(),
-        }
-        return metrics
+    # def calc_metrics(self, edge_scores, edge_labels):
+    #     from utils import error_geometric_mean
+    #     metrics = {
+    #         "MAE": F.l1_loss(edge_scores, edge_labels).item(),
+    #         "MAPE": mean_absolute_percentage_error(edge_labels.detach().cpu().numpy(), edge_scores.detach().cpu().numpy()),
+    #         "RMSE": torch.sqrt(F.mse_loss(edge_scores, edge_labels)).item(),
+    #         "R2": r2_score(edge_labels.detach().cpu().numpy(), edge_scores.detach().cpu().numpy()),
+    #         "KL": F.kl_div(edge_scores, edge_labels).item(),
+    #         "EGM": error_geometric_mean(edge_scores, edge_labels).item(),
+    #     }
+    #     return metrics

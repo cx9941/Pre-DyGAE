@@ -48,17 +48,20 @@ if __name__ == "__main__":
         "leakyrelu": nn.LeakyReLU()
     }
 
-    if args.graph_inital_emb_path:
-        graph_inital_emb = torch.load(args.graph_inital_emb_path)
+    
 
     model = LinkPredict(num_nodes, pos_num_nodes, skill_num_nodes, num_rels, cross_attn=args.cross_attn, time=args.time, embedding=entity2embedding,
                         rg_weight=args.rg_weight, lp_weight=args.lp_weight, rank_weight=args.rank_weight, con_weight=args.con_weight, diff_weight=args.diff_weight,
                         gaussian=args.gaussian, bias=args.bias, initial_embedding=args.initial_embedding, e_dim=args.e_dim, adaptive=args.adaptive,
                         rg_loss_fn=rg_loss_fn[args.rg_loss_fn], rg_activate_fn=rg_activate_fn[args.rg_activate_fn], real_id_nodes=real_id_nodes).to(args.device)
-
-    model.load_state_dict(torch.load(args.load_state_path), strict=False)
-    model.load_node_embedding(*torch.load(args.load_node_embedding_path))
-    model.temporal_emb.load_emb_graph(graph_inital_emb)
+    
+    if args.load_state_path:
+        model.load_state_dict(torch.load(args.load_state_path), strict=False)
+    if args.load_node_embedding_path:
+        model.load_node_embedding(*torch.load(args.load_node_embedding_path))
+    if args.graph_inital_emb_path:
+        graph_inital_emb = torch.load(args.graph_inital_emb_path)
+        model.temporal_emb.load_emb_graph(graph_inital_emb)
 
     params = []
     if args.fix_model == 'yes':

@@ -91,6 +91,7 @@ class Trainer:
         device = self.device
         optimizer = self.optimizer
         best_mae = 0
+        best_loss = 100.0
         step = 0
         with tqdm(range(self.num_epochs), desc="Train") as bar:
             for epoch in bar:
@@ -126,17 +127,22 @@ class Trainer:
                         logger.info(
                             f"Trainloss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
                         metric = self.evaluate()
-                        # logger.info('Valid loss')
                         logger.info(metric)
-                        if best_mae < metric['MRR']:
+                        if best_mae < metric['MRR'] or (best_mae <= metric['MRR'] and best_loss > outputs.loss):
                             best_mae = metric['MRR']
+                            best_loss = outputs.loss
                             if self.time == 'yes':
                                 if self.time_embedding_path:
-                                    torch.save((self.real_mu_time_embeddings, self.real_sigma_time_embeddings), self.time_embedding_path)
+                                    torch.save(
+                                        (self.real_mu_time_embeddings, self.real_sigma_time_embeddings), self.time_embedding_path)
+                                if self.node_embedding_path:
+                                    torch.save(
+                                        (self.real_mu_embeddings, self.real_sigma_embeddings), self.node_embedding_path)
                             else:
                                 self.save_model(step)
                                 if self.node_embedding_path:
-                                    torch.save((self.real_mu_embeddings, self.real_sigma_embeddings), self.node_embedding_path)
+                                    torch.save(
+                                        (self.real_mu_embeddings, self.real_sigma_embeddings), self.node_embedding_path)
 
     def gain_time_embedding(self):
         model = self.model
@@ -174,9 +180,6 @@ class Trainer:
                     g, train_nids, edges, labels, edge_labels = g.to(device), train_nids.to(
                         device), edges.to(device), labels.to(device), edge_labels.to(device)
 
-                # g, train_nids, edges, labels, edge_labels = batch_data
-                # g, train_nids, edges, labels, edge_labels = g.to(device), train_nids.to(device), edges.to(device), labels.to(device), edge_labels.to(device)
-
                 train_embed, (mu_embedding, sigma_embedding), (mu_time_embdding,
                                                                sigma_time_embdding), (mu, sigma) = model.encoder(g, train_nids, std='no')
 
@@ -190,7 +193,6 @@ class Trainer:
                     self.real_mu_embeddings = real_mu_embeddings
                     self.real_sigma_embeddings = real_sigma_embeddings
 
-
                 if self.time_embedding_path:
                     real_mu_time_embeddings = torch.zeros(
                         self.pos_num_nodes + self.skill_num_nodes, mu_embedding.shape[-1]).to(self.device)
@@ -203,7 +205,10 @@ class Trainer:
 
                 import copy
                 if self.time == 'yes':
-                    embed = copy.deepcopy(model.mu_embedding.weight)
+                    if model.load_node_embed:
+                        embed = copy.deepcopy(model.mu_embedding.weight)
+                    else:
+                        embed = torch.randn(model.num_nodes, model.h_dim).to(train_embed.device)
                     embed[train_nids] = train_embed
                 else:
                     embed = train_embed
@@ -222,29 +227,37 @@ class Trainer:
                 all_rg_matrix = torch.zeros(
                     self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
                 all_rg_matrix[all_triplets[:, 0], all_triplets[:,
-                                                                2] - self.pos_num_nodes] = all_rg_score
+                                                               2] - self.pos_num_nodes] = all_rg_score
 
                 all_lp_matrix = torch.zeros(
                     self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
                 all_lp_matrix[all_triplets[:, 0], all_triplets[:,
-                                                                2] - self.pos_num_nodes] = all_lp_score
+                                                               2] - self.pos_num_nodes] = all_lp_score
 
                 all_labels = torch.zeros(
                     self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
                 all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask]
-                            [:, 2] - self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(device)
-                
+                           [:, 2] - self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(device)
+
                 if self.time == 'no':
-                    all_labels = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
-                    all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask][:, 2] - self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(all_lp_score.device)
+                    all_labels = torch.zeros(
+                        self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
+                    all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask][:, 2] -
+                               self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(all_lp_score.device)
 
-                    all_lp_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                    all_lp_matrix[all_triplets[:, 0], all_triplets[:,2] - self.pos_num_nodes] = torch.nn.Sigmoid()(all_lp_score)
-                    all_lp_matrix[self.triplets[self.train_mask | self.test_mask][:, 0], self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
+                    all_lp_matrix = torch.zeros(
+                        self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
+                    all_lp_matrix[all_triplets[:, 0], all_triplets[:, 2] -
+                                  self.pos_num_nodes] = torch.nn.Sigmoid()(all_lp_score)
+                    all_lp_matrix[self.triplets[self.train_mask | self.test_mask][:, 0],
+                                  self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
 
-                    all_rg_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                    all_rg_matrix[all_triplets[:, 0], all_triplets[:,2] - self.pos_num_nodes] = all_rg_score
-                    all_rg_matrix[self.triplets[self.train_mask | self.test_mask][:, 0], self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
+                    all_rg_matrix = torch.zeros(
+                        self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
+                    all_rg_matrix[all_triplets[:, 0], all_triplets[:,
+                                                                   2] - self.pos_num_nodes] = all_rg_score
+                    all_rg_matrix[self.triplets[self.train_mask | self.test_mask][:, 0],
+                                  self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
 
                 metric['regression'] = time_metric(
                     all_labels, all_rg_matrix)
@@ -252,8 +265,10 @@ class Trainer:
                     all_labels, all_lp_matrix)
                 metric['mrr'] = max(
                     metric['regression']['MRR'], metric['link_prediction']['MRR'])
-                final_metric = {m:metric['link_prediction'][m] for m in ['AUC', 'Hits@1', 'Hits@3', "MRR"]}
-                final_metric.update({m:metric['regression'][m] for m in ['EGM', 'MAE','MAPE', "RMSE"]})
+                final_metric = {m: metric['link_prediction'][m]
+                                for m in ['AUC', 'Hits@1', 'Hits@3', "MRR"]}
+                final_metric.update({m: metric['regression'][m] for m in [
+                                    'EGM', 'MAE', 'MAPE', "RMSE"]})
                 logger.info(final_metric)
         return final_metric
 
