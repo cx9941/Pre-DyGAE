@@ -352,3 +352,20 @@ class CustomLoss(nn.Module):
         weights = torch.where(y_true > 0.5, torch.tensor(2.0), torch.tensor(1.0))  # 根据实际情况调整权重
         loss = torch.mean(weights * (y_true - y_pred)**2)
         return loss
+
+def compute_time_slice_similarity(embeddings):
+    T, num, dim = embeddings.shape
+    embeddings_flat = embeddings.reshape(T, -1)  # 将每个时间片的embeddings展平
+    sim = F.cosine_similarity(
+        embeddings_flat[:, None, :], embeddings_flat[None, :, :], dim=2)
+    return sim
+
+def attraction_loss(embeddings, margin=2.0, temperature=2):
+    sim = compute_time_slice_similarity(embeddings) / temperature
+    mask = ~torch.eye(sim.size(0), dtype=torch.bool)  # 排除自相似
+    return (margin - sim[mask]).mean()
+
+def repulsion_loss(embeddings, margin=2.0, temperature=2):
+    sim = compute_time_slice_similarity(embeddings) / temperature
+    mask = ~torch.eye(sim.size(0), dtype=torch.bool)  # 排除自距离
+    return (sim[mask] + margin).mean()
