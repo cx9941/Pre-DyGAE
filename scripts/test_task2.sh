@@ -50,7 +50,7 @@ python code/temporal_shift_infer.py \
     --lr $time_lr \
     --temperature $temperature \
     --file_name ${task1_identity}/${task2_identity}_node \
-    --save_file_name ${task1_identity}/${task2_identity}/lr_${time_lr}_seed_${time_seed}_epochs_${epochs}_temperature_${temperature}_node \
+    --save_file_name ${task1_identity}/${task2_identity}/lr_${time_lr}_seed_${time_seed}_epochs_${epochs}_temperature_${temperature}_${strategy}_node \
     --strategy $strategy \
     --time_seed $time_seed 
 
@@ -67,7 +67,7 @@ python code/test_task2.py \
     --date $month \
     --load_state_path outputs/${owner_id}_checkpoints/task2/$data/${task1_identity}.pt \
     --load_node_embedding_path outputs/${owner_id}_node_embedding/task2/$data/train/${task1_identity}_node.pt \
-    --load_time_embedding_path outputs/${owner_id}_time_embedding/task2/$data/test/$month/${task1_identity}/${task2_identity}/lr_${time_lr}_seed_${time_seed}_epochs_${epochs}_temperature_${temperature}_node.pt \
+    --load_time_embedding_path outputs/${owner_id}_time_embedding/task2/$data/test/$month/${task1_identity}/${task2_identity}/lr_${time_lr}_seed_${time_seed}_epochs_${epochs}_temperature_${temperature}_${strategy}_node.pt \
     --fix_model yes \
     --con_weight 0.0 \
     --rank_weight $rank_weight \
@@ -77,9 +77,16 @@ python code/test_task2.py \
     --rg_loss_fn tweedie \
     --rg_activate_fn softplus \
     --e_dim $e_dim \
-    --time_seed $time_seed 
+    --time_seed $time_seed \
+    --task2_strategy $strategy \
+    --adaptive $adaptive \
+    --initial_embedding yes  \
+    --seed $seed \
+    --lr $task2_lr
 done
 done
+
+
 done
 
 

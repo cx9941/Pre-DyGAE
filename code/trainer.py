@@ -270,6 +270,10 @@ class Trainer:
                 final_metric.update({m: metric['regression'][m] for m in [
                                     'EGM', 'MAE', 'MAPE', "RMSE"]})
                 logger.info(final_metric)
+
+                # rg_score = model.calc_rg_score(embed, self.triplets[self.eval_mask])
+                # torch.save(rg_score, self.scores_path)
+
         return final_metric
 
     def save_model(self, step):
