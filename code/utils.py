@@ -332,6 +332,7 @@ def time_metric(y, y_hat):
     label = torch.zeros(y.shape).to(y.device)
     label[y!=0] = 1
     label = label.long()
+    # print((label))
     metrics = rg_cal_mrr(y_hat, label)
     metrics['AUC'] = cal_auc(y_hat, label)
     metrics['AP'] = cal_ap(y_hat, label)

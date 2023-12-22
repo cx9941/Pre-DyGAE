@@ -95,7 +95,11 @@ if __name__ == "__main__":
 
     test_sigma_embedding = torch.mean(sigma_embeddings, dim=0)
     mu_time_embedding = mu_embeddings[-1]
-    if args.strategy == 'mean':
+    if args.start_date == 7:
+        test_mu_embedding = torch.zeros(mu_embeddings[-1].shape).to(mu_embeddings.device)
+    elif args.start_date == 6:
+        test_mu_embedding = mu_embeddings[-1]
+    elif args.strategy == 'mean':
         test_mu_embedding = torch.mean(mu_embeddings, dim=0)
     elif args.strategy == 'next':
         test_mu_embedding = mu_embeddings[-1]

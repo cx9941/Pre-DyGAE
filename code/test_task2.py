@@ -79,4 +79,4 @@ if __name__ == "__main__":
         "time": "yes"
     }
     trainer = Trainer(**config)
-    trainer.evaluate()
+    trainer.evaluate(mode='test')

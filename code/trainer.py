@@ -96,6 +96,9 @@ class Trainer:
         with tqdm(range(self.num_epochs), desc="Train") as bar:
             for epoch in bar:
                 for batch_data in train_dataloader:  # LP task
+
+                    # self.evaluate()
+
                     step += 1
                     model.train()
                     if 'diff_labels' in self.g.edata:
@@ -211,7 +214,11 @@ class Trainer:
                         embed = torch.randn(model.num_nodes, model.h_dim).to(train_embed.device)
                     embed[train_nids] = train_embed
                 else:
-                    embed = train_embed
+                    if train_embed.shape[0] != model.num_nodes:
+                        embed = torch.randn(model.num_nodes, model.h_dim).to(train_embed.device)
+                        embed[train_nids] = train_embed
+                    else:
+                        embed = train_embed
                 all_triplets_pos = torch.range(
                     0, self.pos_num_nodes - 1).repeat_interleave(self.skill_num_nodes).unsqueeze(0)
                 all_triplets_skill = torch.range(
@@ -272,7 +279,8 @@ class Trainer:
                 logger.info(final_metric)
 
                 # rg_score = model.calc_rg_score(embed, self.triplets[self.eval_mask])
-                # torch.save(rg_score, self.scores_path)
+                if mode == 'test':
+                    torch.save(all_rg_matrix, self.scores_path)
 
         return final_metric
 

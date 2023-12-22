@@ -60,9 +60,15 @@ parser.add_argument("--file_name", type=str, default='rglossfn_tweedie_activate_
 parser.add_argument("--save_file_name", type=str, default='rglossfn_tweedie_activate_softplus_rgweight_100.0_lpweight_1.0_rankweight_0.0_conweight_0.0_diffweight_1.0_gaussian_yes_crossattn_yes_bias_yes_node')
 args = parser.parse_args()
 
+
+
 args.root_dir = f"epoch_{args.num_epochs}_k_{args.k}_lr_{args.lr}_initalembed_{args.initial_embedding}_seed_{args.seed}/"
 
 args.identity = f"rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}"
+
+if '0' in args.train_path:
+    args.identity += "_" + args.train_path.split('/')[-2]
+
 if args.time == "yes":
     assert args.task == 'task2'
     if args.task2_abalation == 'yes':

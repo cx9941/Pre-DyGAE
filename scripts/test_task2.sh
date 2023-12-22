@@ -36,7 +36,7 @@ time_lr=0.001
 temperature=2.0
 for time_seed in 0 1 2 3 4
 do
-for strategy in 'self' 'mean' 'next'
+for strategy in 'self'
 do
 
 task2_identity=epoch_${num_epochs}_k_${k}_lr_${task2_lr}_initalembed_yes_seed_$seed/rglossfn_tweedie_activate_softplus_rgweight_${rg_weight}_lpweight_${lp_weight}_rankweight_${rank_weight}_conweight_0.0_gaussian_yes_crossattn_yes_bias_yes/diffweight_${diff_weight}_adaptive_${adaptive}

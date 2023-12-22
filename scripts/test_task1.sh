@@ -30,8 +30,6 @@ do
 for bias in ${11}
 do
 
-
-
 python code/test_task1.py \
     --mode test \
     --data_name $data \
@@ -39,8 +37,8 @@ python code/test_task1.py \
     --lp_weight $lp_weight \
     --rg_loss_fn $rg_loss_fn \
     --train_path data/$data/task1/train/triplet_percentage.tsv \
-    --test_path data/$data/task1/eval/filter_triplet_percentage.tsv \
-    --eval_path data/$data/task1/test/filter1_triplet_percentage.tsv \
+    --test_path data/$data/task1/eval/triplet_percentage.tsv \
+    --eval_path data/$data/task1/test/triplet_percentage.tsv \
     --task $task \
     --k $k \
     --num_epochs $num_epochs \
