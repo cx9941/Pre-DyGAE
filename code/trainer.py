@@ -281,6 +281,7 @@ class Trainer:
                 # rg_score = model.calc_rg_score(embed, self.triplets[self.eval_mask])
                 if mode == 'test':
                     torch.save(all_rg_matrix, self.scores_path)
+                    torch.save(all_lp_matrix, self.results_path)
 
         return final_metric
 
