@@ -39,13 +39,13 @@ time_lr=0.01
 temperature=2.0
 for re_weight in 1.0
 do
-for ne_weight in 0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8
+for ne_weight in 1.2 1.4 1.6 1.8
 do
 for com_weight in 1.0
 do
-for time_seed in 0 1 2 3 4
+for time_seed in 0
 do
-for strategy in 'self' 'mean' 'next'
+for strategy in 'self'
 do
 python code/temporal_shift_infer.py \
     --data_name $data \

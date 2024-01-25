@@ -131,7 +131,7 @@ if __name__ == "__main__":
                     stable, margin=1/args.temperature, temperature=args.temperature)
                 loss_repel = repulsion_loss(
                     trend, margin=1/args.temperature, temperature=args.temperature)
-                loss = loss_reconstruction + loss_prediction + loss_attract + loss_repel
+                loss = loss_reconstruction + loss_prediction + (loss_attract + loss_repel)
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()

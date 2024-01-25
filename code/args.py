@@ -27,7 +27,7 @@ parser.add_argument("--gaussian", default="yes", type=str)
 parser.add_argument("--bias", default="yes", type=str)
 parser.add_argument("--owner_id", default="new", type=str)
 parser.add_argument("--rg_activate_fn", default="softplus", type=str)
-parser.add_argument("--num_epochs", default=10000, type=int)
+parser.add_argument("--num_epochs", default=1000, type=int)
 parser.add_argument("--eval_step", default=100, type=int)
 parser.add_argument("--e_dim", default=10, type=int)
 parser.add_argument("--sample_size", default=3000, type=int)
@@ -53,13 +53,19 @@ parser.add_argument("--task2_abalation", default="no", type=str)
 
 parser.add_argument("--strategy", type=str, default='avg')
 parser.add_argument("--shift_type", type=str, default='time')
-parser.add_argument("--epochs", type=int, default=1000)
+parser.add_argument("--epochs", type=int, default=500)
 parser.add_argument("--time_lr", type=float, default=1e-5)
-parser.add_argument("--temperature", type=float, default=10)
-parser.add_argument("--file_name", type=str, default='rglossfn_tweedie_activate_softplus_rgweight_100.0_lpweight_1.0_rankweight_0.0_conweight_0.0_diffweight_1.0_gaussian_yes_crossattn_yes_bias_yes_node')
-parser.add_argument("--save_file_name", type=str, default='rglossfn_tweedie_activate_softplus_rgweight_100.0_lpweight_1.0_rankweight_0.0_conweight_0.0_diffweight_1.0_gaussian_yes_crossattn_yes_bias_yes_node')
-args = parser.parse_args()
 
+parser.add_argument("--re_weight", type=float, default=1)
+parser.add_argument("--ne_weight", type=float, default=1)
+parser.add_argument("--com_weight", type=float, default=11)
+
+parser.add_argument("--temperature", type=float, default=10)
+parser.add_argument("--file_name", type=str,
+                    default='rglossfn_tweedie_activate_softplus_rgweight_100.0_lpweight_1.0_rankweight_0.0_conweight_0.0_diffweight_1.0_gaussian_yes_crossattn_yes_bias_yes_node')
+parser.add_argument("--save_file_name", type=str,
+                    default='rglossfn_tweedie_activate_softplus_rgweight_100.0_lpweight_1.0_rankweight_0.0_conweight_0.0_diffweight_1.0_gaussian_yes_crossattn_yes_bias_yes_re_1.0_ne_1.0_com_1.0_node')
+args = parser.parse_args()
 
 
 args.root_dir = f"epoch_{args.num_epochs}_k_{args.k}_lr_{args.lr}_initalembed_{args.initial_embedding}_seed_{args.seed}/"
@@ -74,7 +80,8 @@ if args.time == "yes":
     if args.task2_abalation == 'yes':
         args.identity += f"/diffweight_{args.diff_weight}_adaptive_{args.adaptive}_abalation"
     else:
-        args.root_dir = args.load_state_path.split('/')[-2] + '/' + args.load_state_path.split('/')[-1][:-3]
+        args.root_dir = args.load_state_path.split(
+            '/')[-2] + '/' + args.load_state_path.split('/')[-1][:-3]
         args.identity = f"/epoch_{args.num_epochs}_k_{args.k}_lr_{args.lr}_initalembed_{args.initial_embedding}_seed_{args.seed}/rglossfn_{args.rg_loss_fn}_activate_{args.rg_activate_fn}_rgweight_{args.rg_weight}_lpweight_{args.lp_weight}_rankweight_{args.rank_weight}_conweight_{args.con_weight}_gaussian_{args.gaussian}_crossattn_{args.cross_attn}_bias_{args.bias}/diffweight_{args.diff_weight}_adaptive_{args.adaptive}"
 
 random.seed(args.seed)
@@ -145,7 +152,7 @@ if not os.path.exists('/'.join(args.scores_path.split('/')[:-1])):
 
 if not os.path.exists('/'.join(args.node_embedding_path.split('/')[:-1])):
     os.makedirs('/'.join(args.node_embedding_path.split('/')[:-1]))
-    
+
 
 # Setup logging
 logging.basicConfig(

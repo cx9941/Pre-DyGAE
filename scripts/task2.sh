@@ -171,9 +171,9 @@ python code/test_task2.py \
     --task task2 \
     --time yes \
     --num_epochs $num_epochs \
-    --train_path data/$data/task2/$month/filter_triplet_percentage.tsv \
-    --eval_path data/$data/task2/$month/filter_triplet_percentage.tsv \
-    --test_path data/$data/task2/$month/filter_triplet_percentage.tsv \
+    --train_path data/$data/task2/$month/triplet_percentage.tsv \
+    --eval_path data/$data/task2/$month/triplet_percentage.tsv \
+    --test_path data/$data/task2/$month/triplet_percentage.tsv \
     --date $month \
     --load_state_path outputs/${owner_id}_checkpoints/task2/$data/${task1_identity}.pt \
     --load_node_embedding_path outputs/${owner_id}_node_embedding/task2/$data/train/${task1_identity}_node.pt \
