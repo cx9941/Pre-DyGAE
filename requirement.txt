@@ -1,0 +1,8 @@
+dgl==1.1.1+cu117
+dglgo==0.0.2
+transformers==4.6.0
+torchmetrics==1.0.1
+omegaconf
+neptune
+torch_geometric
+torch_geometric_temporal
