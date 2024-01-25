@@ -22,8 +22,8 @@ class Trainer:
         num_nodes = g.num_nodes()
         num_rels = data.num_rels
 
-        # self.old_g = get_subset_g(old_g, old_g.edata["train_mask"], num_rels)
-        # self.old_g.edata["norm"] = dgl.norm_by_dst(self.old_g).unsqueeze(-1)
+        
+        
 
         train_g = get_subset_g(g, g.edata["train_mask"], num_rels)
 
@@ -73,14 +73,14 @@ class Trainer:
 
     def get_train_dataloader(self, g, k=10):
         subg_iter = SubgraphIterator(g, self.num_rels, sample_size=self.sample_size,
-                                     num_epochs=1, k=k, time=self.time)  # uniform edge sampling
+                                     num_epochs=1, k=k, time=self.time)  
         dataloader = GraphDataLoader(
             subg_iter, batch_size=1, collate_fn=lambda x: x[0], shuffle=True)
         return dataloader
 
     def get_eval_dataloader(self, g, k=10):
         subg_iter = SubgraphIterator(g, self.num_rels, sample_size=self.sample_size,
-                                     num_epochs=1, k=10, time=self.time)  # uniform edge sampling
+                                     num_epochs=1, k=10, time=self.time)  
         dataloader = GraphDataLoader(
             subg_iter, batch_size=1, collate_fn=lambda x: x[0])
         return dataloader
@@ -95,9 +95,9 @@ class Trainer:
         step = 0
         with tqdm(range(self.num_epochs), desc="Train") as bar:
             for epoch in bar:
-                for batch_data in train_dataloader:  # LP task
+                for batch_data in train_dataloader:  
 
-                    # self.evaluate()
+                    
 
                     step += 1
                     model.train()
@@ -118,19 +118,19 @@ class Trainer:
                     optimizer.zero_grad()
                     loss.backward()
                     nn.utils.clip_grad_norm_(
-                        model.parameters(), max_norm=1.0)  # clip gradients
+                        model.parameters(), max_norm=1.0)  
                     optimizer.step()
                     bar.set_description(
                         f"loss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rg_loss_pos:{outputs.rg_loss_pos}, rg_loss_neg:{outputs.rg_loss_neg}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
                     if step % self.eval_step == 0:
                         logger.info(f"epoch {epoch},step {step}")
-                        # metric = self.evaluate(self.test_g, self.test_mask, self.test_nids, mode='test')
-                        # logger.info('Test loss')
-                        # logger.info(metric)
+                        
+                        
+                        
                         logger.info(
                             f"Trainloss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rg_loss_pos:{outputs.rg_loss_pos}, rg_loss_neg:{outputs.rg_loss_neg}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
                         metric = self.evaluate()
-                        # logger.info(metric)
+                        
                         if best_mae < metric['MRR'] or (best_mae <= metric['MRR'] and best_loss > outputs.loss):
                             best_mae = metric['MRR']
                             best_loss = outputs.loss
@@ -155,7 +155,7 @@ class Trainer:
 
         train_dataloader = self.get_train_dataloader(self.train_g, self.k)
         with torch.no_grad():
-            for batch_data in train_dataloader:  # LP task
+            for batch_data in train_dataloader:  
                 g, train_nids, edges, labels, edge_labels = batch_data
 
             g, train_nids, edges, labels, edge_labels = g.to(device), train_nids.to(
@@ -173,7 +173,7 @@ class Trainer:
         train_dataloader = self.get_train_dataloader(self.train_g, self.k)
         metric = {}
         with torch.no_grad():
-            for batch_data in train_dataloader:  # LP task
+            for batch_data in train_dataloader:  
                 if 'diff_labels' in self.g.edata:
                     g, train_nids, edges, labels, edge_labels, diff_labels = batch_data
                     g, train_nids, edges, labels, edge_labels, diff_labels = g.to(device), train_nids.to(
@@ -278,7 +278,7 @@ class Trainer:
                                     'EGM', 'MAE', 'MAPE', "RMSE"]})
                 logger.info(final_metric)
 
-                # rg_score = model.calc_rg_score(embed, self.triplets[self.eval_mask])
+                
                 if mode == 'test':
                     torch.save(all_rg_matrix, self.scores_path)
                     torch.save(all_lp_matrix, self.results_path)

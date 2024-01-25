@@ -16,12 +16,12 @@ class GlobalUniform:
         self.eids = np.arange(g.num_edges())
 
     def sample(self):
-        # return torch.from_numpy(np.random.choice(self.eids, self.sample_size))
+        
         return torch.from_numpy(self.eids)
 
 
 class NegativeSampler:
-    def __init__(self, k=10):  # negative sampling rate = 10
+    def __init__(self, k=10):  
         self.k = k
 
     def sample(self, pos_samples, num_nodes):
@@ -37,16 +37,16 @@ class NegativeSampler:
         neg_samples[subj, 0] = values_0[subj]
         neg_samples[obj, 2] = values_2[obj]
         samples = np.concatenate((pos_samples, neg_samples))
-        # samples = pos_samples
+        
 
-        # binary labels indicating positive and negative samples
+        
         labels = np.zeros(batch_size * (self.k + 1), dtype=np.float32)
         labels[:batch_size] = 1
 
         return torch.from_numpy(samples), torch.from_numpy(labels)
 
 class Time_NegativeSampler:
-    def __init__(self, k=10):  # negative sampling rate = 10
+    def __init__(self, k=10):  
         self.k = k
 
     def sample(self, pos_samples, num_nodes):
@@ -68,7 +68,7 @@ class Time_NegativeSampler:
         neg_samples = neg_samples[np.random.choice(neg_samples.shape[0], neg_batch_size, replace=False)]
         samples = np.concatenate((pos_samples, neg_samples))
 
-        # binary labels indicating positive and negative samples
+        
         labels = np.zeros(batch_size + neg_batch_size, dtype=np.float32)
         labels[:batch_size] = 1
 
@@ -82,7 +82,7 @@ class SubgraphIterator:
         self.sample_size = sample_size
         self.num_epochs = num_epochs
         self.pos_sampler = GlobalUniform(g, sample_size)
-        # self.neg_sampler = NegativeSampler(k)
+        
         self.neg_sampler = Time_NegativeSampler(k)
 
     def __len__(self):
@@ -94,10 +94,10 @@ class SubgraphIterator:
         src, dst = src.numpy(), dst.numpy()
         rel = self.g.edata[dgl.ETYPE][eids].numpy()
 
-        # relabel nodes to have consecutive node IDs
+        
         uniq_v, edges = np.unique((src, dst), return_inverse=True)
         num_nodes = len(uniq_v)
-        # edges is the concatenation of src, dst with relabeled ID
+        
         src, dst = np.reshape(edges, (2, -1))
         relabeled_data = np.stack((src, rel, dst)).transpose()
 

@@ -6,7 +6,7 @@ import torch.nn.functional as F
 class Graphormer(nn.Module):
     def __init__(self, feat_size, hidden_size, num_heads):
         super().__init__()
-        # two-layer RGCN
+        
         self.conv1 = GraphormerLayer(
             feat_size=feat_size,
             hidden_size=hidden_size,

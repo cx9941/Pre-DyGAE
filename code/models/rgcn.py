@@ -7,7 +7,7 @@ import dgl
 class RGCN(nn.Module):
     def __init__(self, h_dim, num_rels):
         super().__init__()
-        # two-layer RGCN
+        
         self.conv1 = RelGraphConv(
             h_dim,
             h_dim,

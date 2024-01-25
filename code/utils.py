@@ -36,7 +36,7 @@ def filter(
 ):
     """Get candidate heads or tails to score"""
     target_s, target_r, target_o = int(target_s), int(target_r), int(target_o)
-    # Add the ground truth node first
+    
     if filter_o:
         candidate_nodes = [target_o]
     else:
@@ -52,7 +52,7 @@ def filter(
         triplet = (
             (target_s, target_r, e) if filter_o else (e, target_r, target_o)
         )
-        # Do not consider a node if it leads to a real triplet
+        
         if triplet not in triplets_to_filter:
             candidate_nodes = [e] + candidate_nodes
     return torch.LongTensor(candidate_nodes)
@@ -173,16 +173,16 @@ class PICP(nn.Module):
         prediction_variance = predictions.var()
         prediction_std = torch.sqrt(prediction_variance)
 
-        # Calculate the half-width of the prediction interval for each prediction
+        
         half_width = torch.erfinv(torch.tensor(confidence_level)) * prediction_std * 2**0.5
 
-        # Calculate the lower and upper bounds of the prediction intervals
+        
         lower_bound = prediction_mean - half_width
         upper_bound = prediction_mean + half_width
 
-        # Check if the true target values are within the prediction intervals
+        
         within_interval = torch.logical_and(true_targets >= lower_bound, true_targets <= upper_bound)
-        # Calculate the Prediction Interval Coverage Probability (PICP)
+        
         coverage_probability = within_interval.float().mean().item()
         return coverage_probability
 
@@ -195,13 +195,13 @@ class MPIW(nn.Module):
         confidence_level = self.confidence_level
         prediction_mean = predictions.mean()
         prediction_variance = predictions.var()
-        # Define the confidence level for the prediction intervals (e.g., 95%)
+        
         confidence_level = 0.95
-        # Calculate the standard deviation (square root of variance)
+        
         prediction_std = torch.sqrt(prediction_variance)
-        # Calculate the half-width of the prediction interval
+        
         half_width = torch.erfinv(torch.tensor(confidence_level)) * prediction_std * 2**0.5
-        # Calculate the mean prediction interval width
+        
         mean_width = torch.mean(half_width)
         return mean_width
 
@@ -211,9 +211,9 @@ class TweedieLoss(nn.Module):
         self.power = power
 
     def forward(self, y_true, y_pred):
-        # 确保预测值非负
+        
         y_pred = torch.clamp(y_pred, min=1e-6)
-        # 计算Tweedie Loss
+        
         loss = -(y_true * torch.log(y_pred) - y_pred ** self.power) / self.power
         return loss.mean()
 
@@ -223,14 +223,14 @@ class TweedieLossWithWeight(nn.Module):
         self.power = power
 
     def forward(self, y_true, y_pred):
-        # 确保预测值非负
+        
         y_pred = torch.clamp(y_pred, min=1e-6)
         
-        # 计算原始的 Tweedie Loss
+        
         loss = -(y_true * torch.log(y_pred) - y_pred ** self.power) / self.power
         
-        # 添加自适应权重
-        weights = torch.where(y_true > 0.5, torch.tensor(2.0), torch.tensor(1.0))  # 根据实际情况调整权重
+        
+        weights = torch.where(y_true > 0.5, torch.tensor(2.0), torch.tensor(1.0))  
         weighted_loss = weights * loss
 
         return weighted_loss.mean()
@@ -247,20 +247,20 @@ def info_nce_loss(embeddings, labels, temperature=1.0):
     Returns:
         torch.Tensor: InfoNCE loss.
     """
-    # Compute the similarity matrix between embeddings using cosine similarity
+    
     similarity_matrix = F.cosine_similarity(embeddings.unsqueeze(1), embeddings.unsqueeze(0), dim=-1)
-    # Get the labels for each positive pair (same label)
+    
     positive_col_labels = labels.unsqueeze(1).expand(-1, embeddings.size(0))
     positive_row_labels = labels.T.unsqueeze(0).expand(embeddings.size(0), -1)
     positive_labels = positive_col_labels == positive_row_labels
 
-    # Compute the numerator of the InfoNCE loss
+    
     numerator = torch.exp(similarity_matrix / temperature)
 
-    # Compute the denominator of the InfoNCE loss (sum of similarities for each data point)
+    
     denominator = torch.sum(torch.exp(similarity_matrix / temperature), dim=1)
 
-    # Compute the InfoNCE loss
+    
     loss = -torch.log(numerator / denominator.unsqueeze(-1))
 
     mask = torch.eye(embeddings.size(0), dtype=torch.bool)
@@ -324,7 +324,7 @@ def cal_smape(pred, label):
     label = label.detach().cpu().numpy()
     denominator = (np.abs(label) + np.abs(pred)) / 2.0
     diff = np.abs(label - pred) / denominator
-    diff[denominator == 0] = 0  # Handle the case where label + pred is zero
+    diff[denominator == 0] = 0  
     smape = np.mean(diff)
     return smape
 
@@ -332,7 +332,7 @@ def time_metric(y, y_hat):
     label = torch.zeros(y.shape).to(y.device)
     label[y!=0] = 1
     label = label.long()
-    # print((label))
+    
     metrics = rg_cal_mrr(y_hat, label)
     metrics['AUC'] = cal_auc(y_hat, label)
     metrics['AP'] = cal_ap(y_hat, label)
@@ -349,24 +349,24 @@ class CustomLoss(nn.Module):
         super(CustomLoss, self).__init__()
 
     def forward(self, y_true, y_pred):
-        # 设计一个加权损失函数，根据y_true的值来动态调整权重
-        weights = torch.where(y_true > 0.5, torch.tensor(2.0), torch.tensor(1.0))  # 根据实际情况调整权重
+        
+        weights = torch.where(y_true > 0.5, torch.tensor(2.0), torch.tensor(1.0))  
         loss = torch.mean(weights * (y_true - y_pred)**2)
         return loss
 
 def compute_time_slice_similarity(embeddings):
     T, num, dim = embeddings.shape
-    embeddings_flat = embeddings.reshape(T, -1)  # 将每个时间片的embeddings展平
+    embeddings_flat = embeddings.reshape(T, -1)  
     sim = F.cosine_similarity(
         embeddings_flat[:, None, :], embeddings_flat[None, :, :], dim=2)
     return sim
 
 def attraction_loss(embeddings, margin=2.0, temperature=2):
     sim = compute_time_slice_similarity(embeddings) / temperature
-    mask = ~torch.eye(sim.size(0), dtype=torch.bool)  # 排除自相似
+    mask = ~torch.eye(sim.size(0), dtype=torch.bool)  
     return (margin - sim[mask]).mean()
 
 def repulsion_loss(embeddings, margin=2.0, temperature=2):
     sim = compute_time_slice_similarity(embeddings) / temperature
-    mask = ~torch.eye(sim.size(0), dtype=torch.bool)  # 排除自距离
+    mask = ~torch.eye(sim.size(0), dtype=torch.bool)  
     return (sim[mask] + margin).mean()

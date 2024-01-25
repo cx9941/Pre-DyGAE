@@ -26,6 +26,6 @@ class TimeSeriesAutoEncoder(nn.Module):
     def forward(self, x):
         stable = self.stable_mlp(x)
         trend = self.trend_mlp(x)
-        reconstructed = stable + trend  # 重构原始embedding
-        next_step = self.next_step_mlp(trend) + reconstructed  # 预测下一个时间片
+        reconstructed = stable + trend  
+        next_step = self.next_step_mlp(trend) + reconstructed  
         return reconstructed, next_step, stable, trend

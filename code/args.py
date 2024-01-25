@@ -154,7 +154,7 @@ if not os.path.exists('/'.join(args.node_embedding_path.split('/')[:-1])):
     os.makedirs('/'.join(args.node_embedding_path.split('/')[:-1]))
 
 
-# Setup logging
+
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
     datefmt="%m/%d/%Y %H:%M:%S",

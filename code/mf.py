@@ -17,24 +17,24 @@ import torch
 import torch.optim as optim
 
 n, m = matrix.shape
-k = 10  # 设定潜在特征的数量
+k = 10  
 
-# 初始化P和Q
+
 P = torch.rand(n, k, requires_grad=True)
 Q = torch.rand(k, m, requires_grad=True)
 
-# 选择一个优化器
+
 optimizer = optim.Adam([P, Q], lr=0.01)
 
-# 迭代次数
+
 num_iterations = 10000
 
-# 训练循环
+
 for i in range(num_iterations):
     optimizer.zero_grad()
-    loss = ((torch.matmul(P, Q) - matrix) ** 2).mean()  # 计算MSE
-    loss.backward()  # 反向传播
-    optimizer.step()  # 更新参数
+    loss = ((torch.matmul(P, Q) - matrix) ** 2).mean()  
+    loss.backward()  
+    optimizer.step()  
 
     if i % 100 == 0:
         print(f"Iteration {i}: Loss {loss.item()}")

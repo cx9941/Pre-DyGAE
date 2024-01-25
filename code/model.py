@@ -115,10 +115,10 @@ class LinkPredict(nn.Module):
         s = input_embed[row_indices]
         r = self.w_relation[triplets[:, 1]]
         o = input_embed[col_indices]
-        # s = self.feedback(s)
-        # r = self.feedback(r)
-        # o = self.feedback(o)
-        # rg_origin_score = (s * r * o).sum(dim=-1)
+        
+        
+        
+        
         rg_origin_score = self.fc_rg(s * r * o).squeeze(-1)
         rg_score = self.rg_activate_fn(rg_origin_score)
         return rg_score
@@ -138,7 +138,7 @@ class LinkPredict(nn.Module):
             x = self.emb(nids)
 
             if self.cross_attn == 'yes':
-                # gain the bias
+                
                 if self.bias == "yes":
                     down_embedding = self.down_sampling(
                         self.embedding.to(x.device))
@@ -156,11 +156,11 @@ class LinkPredict(nn.Module):
                     pos_embedding, skill_embedding, skill_embedding, attn_bias=attn_bias).squeeze(0)
                 x[nids < self.pos_num_nodes] = F.normalize(
                     pos_embedding) + x[nids < self.pos_num_nodes]
-                # x[nids >= self.pos_num_nodes] = self.skill_attn(x[nids >= self.pos_num_nodes], x[nids >= self.pos_num_nodes], x[nids >= self.pos_num_nodes])[0] + x[nids >= self.pos_num_nodes]
+                
 
             embedding = self.rgcn(g, x)
 
-        # add gaussian noise
+        
         if self.gaussian == "yes":
             if self.load_node_embed:
                 mu_embedding = self.mu_embedding(nids)
@@ -169,7 +169,7 @@ class LinkPredict(nn.Module):
                 mu_embedding = self.mu_emb(g, embedding)
                 sigma_embedding = self.sigma_emb(g, embedding)
 
-            # time_emb
+            
             if self.time == 'yes':
                 if self.load_node_temporal_embed:
                     mu_time_embdding, sigma_time_embdding = self.mu_time_embedding(
@@ -177,7 +177,7 @@ class LinkPredict(nn.Module):
                 else:
                     mu_time_embdding, sigma_time_embdding = self.temporal_emb(
                         nids, g)
-                    # mu_time_embdding, sigma_time_embdding = self.temporal_emb_mu(g, embedding), self.temporal_emb_sigma(g, embedding)
+                    
 
                 mu = mu_embedding + mu_time_embdding
                 sigma = sigma_embedding + sigma_time_embdding
@@ -200,7 +200,7 @@ class LinkPredict(nn.Module):
         embedding, (mu_embedding, sigma_embedding), (mu_time_embdding,
                                                      sigma_time_embdding), (mu, sigma) = self.encoder(g, nids, std)
 
-        # skill cluster constrastive learning
+        
         if self.con_weight != 0:
             skill2labels = skill2cluster[nids[nids >= self.pos_num_nodes]]
             skill2embedding = embedding[nids >= self.pos_num_nodes]
@@ -208,7 +208,7 @@ class LinkPredict(nn.Module):
         else:
             con_loss = 0
 
-        # edge classification task
+        
         triplets = triplets.to(torch.long).to(embedding.device)
 
         if self.lp_weight != 0:
@@ -218,14 +218,14 @@ class LinkPredict(nn.Module):
                 lp_loss = 0
             else:
                 lp_loss = F.binary_cross_entropy_with_logits(lp_score, labels)
-                # lp_loss = F.binary_cross_entropy(lp_score, edge_labels)
+                
         else:
             lp_loss = 0
 
-        # regression loss
+        
         if self.rg_weight != 0:
             rg_score = self.calc_rg_score(embedding, triplets)
-            # rg_loss = self.rg_loss_fn(rg_score, edge_labels)
+            
             rg_loss_pos = self.rg_loss_fn(
                 rg_score[edge_labels != 0], edge_labels[edge_labels != 0])
             rg_loss_neg = self.rg_loss_fn(
@@ -234,10 +234,10 @@ class LinkPredict(nn.Module):
         else:
             rg_loss = 0
 
-        # reg_loss
+        
         reg_loss = self.regularization_loss(embedding)
 
-        # rankingloss
+        
         if self.rank_weight != 0:
             criterion = nn.MarginRankingLoss(margin=1.0)
             score_level1 = lp_score[edge_labels > 0.1]
@@ -300,14 +300,14 @@ class LinkPredict(nn.Module):
             embedding=embedding,
         )
 
-    # def calc_metrics(self, edge_scores, edge_labels):
-    #     from utils import error_geometric_mean
-    #     metrics = {
-    #         "MAE": F.l1_loss(edge_scores, edge_labels).item(),
-    #         "MAPE": mean_absolute_percentage_error(edge_labels.detach().cpu().numpy(), edge_scores.detach().cpu().numpy()),
-    #         "RMSE": torch.sqrt(F.mse_loss(edge_scores, edge_labels)).item(),
-    #         "R2": r2_score(edge_labels.detach().cpu().numpy(), edge_scores.detach().cpu().numpy()),
-    #         "KL": F.kl_div(edge_scores, edge_labels).item(),
-    #         "EGM": error_geometric_mean(edge_scores, edge_labels).item(),
-    #     }
-    #     return metrics
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

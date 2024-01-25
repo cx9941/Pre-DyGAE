@@ -25,27 +25,27 @@ from dgl.data.utils import (
 import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
-# def _read_triplets(filename):
-#     with open(filename, "r+") as f:
-#         for line in f:
-#             processed_line = line.strip().split("\t")
-#             yield processed_line
 
 
-# def _read_triplets_as_list(filename, entity_dict, relation_dict):
-#     l = []
-#     for triplet in _read_triplets(filename):
-#         s = entity_dict[triplet[0]]
-#         r = relation_dict[triplet[1]]
-#         o = entity_dict[triplet[2]]
-#         score = float(triplet[3])
-#         l.append([s, r, o, score])
-#     return l
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def _read_triplets_as_labels(filename):
     l = []
     for triplet in _read_triplets(filename):
-        # print(triplet)
+        
         score = float(triplet[3])
         l.append([score])
     return l
@@ -53,7 +53,7 @@ def _read_triplets_as_labels(filename):
 def _read_triplets_as_diff_labels(filename):
     l = []
     for triplet in _read_triplets(filename):
-        # print(triplet)
+        
         score = float(triplet[4])
         l.append([score])
     return l
@@ -151,20 +151,20 @@ class JDDataset(KnowledgeGraphDataset):
         num_nodes = len(entity_dict)
         num_rels = len(relation_dict)
         if self.verbose:
-            logger.info("# entities: {}".format(num_nodes))
-            logger.info("# relations: {}".format(num_rels))
-            logger.info("# training edges: {}".format(train.shape[0]))
-            logger.info("# validation edges: {}".format(valid.shape[0]))
-            logger.info("# testing edges: {}".format(test.shape[0]))
+            logger.info("
+            logger.info("
+            logger.info("
+            logger.info("
+            logger.info("
 
-        # for compatability
+        
         self._train = train
         self._valid = valid
         self._test = test
 
         self._num_nodes = num_nodes
         self._num_rels = num_rels
-        # build graph
+        
         g, data = build_knowledge_graph(
             num_nodes, num_rels, train, valid, test, reverse=self.reverse
         )
@@ -235,7 +235,7 @@ class JDDataset(KnowledgeGraphDataset):
         val_mask = self._g.edata["valid_edge_mask"].numpy()
         test_mask = self._g.edata["test_edge_mask"].numpy()
 
-        # convert mask tensor into bool tensor if possible
+        
         self._g.edata["train_edge_mask"] = generate_mask_tensor(
             self._g.edata["train_edge_mask"].numpy()
         )
@@ -255,7 +255,7 @@ class JDDataset(KnowledgeGraphDataset):
             self._g.edata["test_mask"].numpy()
         )
 
-        # for compatability (with 0.4.x) generate train_idx, valid_idx and test_idx
+        
         etype = self._g.edata["etype"].numpy()
         self._etype = etype
         u, v = self._g.all_edges(form="uv")
@@ -275,11 +275,11 @@ class JDDataset(KnowledgeGraphDataset):
         )
 
         if self.verbose:
-            print("# entities: {}".format(self.num_nodes))
-            print("# relations: {}".format(self.num_rels))
-            print("# training edges: {}".format(self._train.shape[0]))
-            print("# validation edges: {}".format(self._valid.shape[0]))
-            print("# testing edges: {}".format(self._test.shape[0]))
+            print("
+            print("
+            print("
+            print("
+            print("
 
     @property
     def num_nodes(self):
@@ -380,14 +380,14 @@ class JD_task3_Dataset(KnowledgeGraphDataset):
         entity_path = os.path.join(root_path, "entities.dict")
         relation_path = os.path.join(root_path, "relations.dict")
         idx = self.idx
-        # skill2cluster_path = os.path.join(root_path, "skill2cluster.tsv")
+        
         paths = [os.path.join(root_path, f"{i}/triplet_percentage.tsv") for i in range(1, 6)]
         eval_path = os.path.join(root_path, "6/triplet_percentage.tsv")
         test_path = os.path.join(root_path, "7/triplet_percentage.tsv")
 
         entity_dict = _read_dictionary(entity_path)
         relation_dict = _read_dictionary(relation_path)
-        # skill2cluster = pd.read_csv(skill2cluster_path, header=None)[0]
+        
         trains = [np.asarray(_read_triplets_as_list(paths[i], entity_dict, relation_dict) for i in range(1, 6))]
         valid = np.asarray(
             _read_triplets_as_list(eval_path, entity_dict, relation_dict)
@@ -402,20 +402,20 @@ class JD_task3_Dataset(KnowledgeGraphDataset):
         valid = [j for i in trains for j in i]
         test = [j for i in trains for j in i]
         if self.verbose:
-            logger.info("# entities: {}".format(num_nodes))
-            logger.info("# relations: {}".format(num_rels))
-            logger.info("# training edges: {}".format(train.shape[0]))
-            logger.info("# validation edges: {}".format(valid.shape[0]))
-            logger.info("# testing edges: {}".format(test.shape[0]))
+            logger.info("
+            logger.info("
+            logger.info("
+            logger.info("
+            logger.info("
 
-        # for compatability
+        
         self._train = train
         self._valid = valid
         self._test = test
 
         self._num_nodes = num_nodes
         self._num_rels = num_rels
-        # build graph
+        
         g, data = build_knowledge_graph(
             num_nodes, num_rels, train, valid, test, reverse=self.reverse
         )
@@ -443,7 +443,7 @@ class JD_task3_Dataset(KnowledgeGraphDataset):
         g.edata['edge_labels'] = edge_labels
         g.ndata["ntype"] = ntype
         g.ndata['nodes'] = torch.tensor([int(i) for i in entity_dict])
-        # g.ndata['ncluster'] = torch.tensor([-1]* (num_nodes - len(skill2cluster)) + list(skill2cluster))
+        
 
         self._g = g
 
@@ -488,7 +488,7 @@ class JD_task3_Dataset(KnowledgeGraphDataset):
         val_mask = self._g.edata["valid_edge_mask"].numpy()
         test_mask = self._g.edata["test_edge_mask"].numpy()
 
-        # convert mask tensor into bool tensor if possible
+        
         self._g.edata["train_edge_mask"] = generate_mask_tensor(
             self._g.edata["train_edge_mask"].numpy()
         )
@@ -508,7 +508,7 @@ class JD_task3_Dataset(KnowledgeGraphDataset):
             self._g.edata["test_mask"].numpy()
         )
 
-        # for compatability (with 0.4.x) generate train_idx, valid_idx and test_idx
+        
         etype = self._g.edata["etype"].numpy()
         self._etype = etype
         u, v = self._g.all_edges(form="uv")
@@ -528,11 +528,11 @@ class JD_task3_Dataset(KnowledgeGraphDataset):
         )
 
         if self.verbose:
-            print("# entities: {}".format(self.num_nodes))
-            print("# relations: {}".format(self.num_rels))
-            print("# training edges: {}".format(self._train.shape[0]))
-            print("# validation edges: {}".format(self._valid.shape[0]))
-            print("# testing edges: {}".format(self._test.shape[0]))
+            print("
+            print("
+            print("
+            print("
+            print("
 
     @property
     def num_nodes(self):

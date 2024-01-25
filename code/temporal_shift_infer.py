@@ -82,7 +82,7 @@ if __name__ == "__main__":
     }
     trainer = Trainer(**config)
 
-    ##### 调用temporal shift模块
+    
     mu_embeddings = []
     sigma_embeddings = []
     for month in range(args.start_date, args.end_date):
