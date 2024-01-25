@@ -1,14 +1,21 @@
 This is a Pytorch implementation of Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting
+
 # Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting
 
 # The Code
+
 ## Requirements
+
 Following is the suggested way to install the dependencies:
+
 ```
 pip install -r requirements.txt
 ```
+
 Note that pytorch >= 1.13.0
+
 ## Folder Structure
+
 ```tex
 └── data
     └── Dai                     # Daily Dataset
@@ -38,7 +45,9 @@ Note that pytorch >= 1.13.0
 ├── requirements.txt            # The dependencies
 └── README.md                   # This document
 ```
+
 ## Train and Test
+
 Predict the OSD in the future.
 
 ```
@@ -48,7 +57,7 @@ sh scripts/task2.sh IT 100 0.1 0.05 tweedie yes 1.0 yes  # For IT Dataset
 sh scripts/task2.sh Man 100 0.1 0.05 tweedie yes 1.0 yes # For Man Dataset
 ```
 
-Complete the OSD graph (validation expriment):
+Complete the OSD graph (validation experiment):
 
 ```
 sh scripts/task1.sh Dai 0 3 tweedie softplus 100 0.1 0.05 yes yes yes # For Dai Dataset
