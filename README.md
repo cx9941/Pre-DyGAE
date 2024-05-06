@@ -12,38 +12,37 @@
 
 Official code for article "[Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting]()".
 
-
-Occupational skill demand (OSD) forecasting seeks to predict dynamic skill demand specific to occupations, beneficial for employees and employers to grasp occupational nature and maintain a competitive edge in the rapidly evolving labor market. Although recent research has proposed data-driven techniques for forecasting skill demand, the focus has remained predominantly on overall trends rather than occupational granularity. In this paper, we propose a novel Pre-training Enhanced Dynamic Graph Autoencoder (Pre-DyGAE), forecasting skill demand from an occupational perspective. 
+Occupational skill demand (OSD) forecasting seeks to predict dynamic skill demand specific to occupations, beneficial for employees and employers to grasp occupational nature and maintain a competitive edge in the rapidly evolving labor market. Although recent research has proposed data-driven techniques for forecasting skill demand, the focus has remained predominantly on overall trends rather than occupational granularity. In this paper, we propose a novel Pre-training Enhanced Dynamic Graph Autoencoder (Pre-DyGAE), forecasting skill demand from an occupational perspective.
 
 ![Framework](img/framework.pdf)
 
-
-
 ## Installation
+
 Create a python 3.8 environment and install dependencies:
 
-  ```
+```
   conda create -n python3.8 PreDyGAE
   source activate PreDyGAE
-  ```
+```
 
 Install library
 
-  ```
+```
   pip install -r requirements.txt
-  ```
+```
 
 Note that pytorch >= 1.13.0
 
 ## Dataset
+
 We have collected JDs from four distinct industries: Daily, Finance, IT, and Manufacturing. They have the same format and in this repository. The four datasets are stored in a form of quadruple sets < occupation − relation − skill − demand > without specific names of occupations and skills for protecting company privacy.
 
 ### Occupational Skill Demand
 
-|Occupation|Relation|Skill|Demand|
-|:-:|:-:|:-:|:-:|
-|20057|100000|30345|0.1111111111111111|
-|...|...|...|...|
+| Occupation | Relation | Skill |       Demand       |
+| :--------: | :------: | :---: | :----------------: |
+|   20057   |  100000  | 30345 | 0.1111111111111111 |
+|    ...    |   ...   |  ...  |        ...        |
 
 ### Folder Structure
 
@@ -77,10 +76,9 @@ We have collected JDs from four distinct industries: Daily, Finance, IT, and Man
 └── README.md                   # This document
 ```
 
-
 ## How to Run Model
 
-To run the Pre-DyGAE, you should set args in `code/models/args.py` in advance to run `script/task2.sh` for both training and testing phase: 
+To run the Pre-DyGAE, you should set args in `code/models/args.py` in advance to run `script/task2.sh` for both training and testing phase:
 
 Predict the OSD in the future.
 
@@ -100,7 +98,6 @@ sh scripts/task1.sh IT 0 3 tweedie softplus 100 0.1 0.05 yes yes yes  # For IT D
 sh scripts/task1.sh Man 0 3 tweedie softplus 100 0.1 0.05 yes yes yes # For Man Dataset
 ```
 
-
 ## Citation
 
 If you find our work is useful for your research, please consider citing:
@@ -109,13 +106,15 @@ If you find our work is useful for your research, please consider citing:
 @inproceedings{chen_pretrain_2024,
   title={Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting.},
   author={Chen, Xi and Qin, Chuan and Wang, Zhigaoyuan and Cheng, Yihang and Wang, Chao and Zhu, Hengshu and Xiong, Hui},
-  booktitle={IJCAI},
+booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence},
   year={2024}
 }
 ```
 
 ## License
+
 This project is licensed under the MIT License.
 
 ## Acknowledgements
+
 This project is follow the [Pytorch-Project-Template](https://github.com/victoresque/pytorch-template) built by [Victor Huang](https://github.com/victoresque)
