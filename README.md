@@ -51,12 +51,12 @@ We have collected JDs from four distinct industries: Daily, Finance, IT, and Man
 
 ```tex
 └── data
-    └── Dai                     # Daily Dataset
-        ├── task1               # dataset for OSD graph completion
-        └── task2               # dataset for OSD forecasting
-    ├── Fin                     # Fin Dataset
-    ├── IT                      # IT Dataset
-    └── Man                     # Man Dataset
+    └── Dai                         # Daily Dataset
+        ├── task1                   # dataset for OSD graph completion
+        └── task2                   # dataset for OSD forecasting
+    ├── Fin                         # Fin Dataset
+    ├── IT                          # IT Dataset
+    └── Man                         # Man Dataset
 └── code
     ├── models                      # Related Models
     ├── args.py                     # The parameters
@@ -72,11 +72,12 @@ We have collected JDs from four distinct industries: Daily, Finance, IT, and Man
     ├── train_task2.py              # Test code for OSD forecasting
     ├── trainer.py                  # Train and Test functions
     ├── utils.py                    # Tools
-└── scripts                     # The running command
+└── scripts                         # The running command
     ├── task1.py                    # The pipeline for OSD graph completion
     └── task2.py                    # The pipeline for OSD forecasting
-├── requirements.txt            # The dependencies
-└── README.md                   # This document
+├── LICENSE                         # The MIT LICENSE
+├── requirements.txt                # The dependencies
+└── README.md                       # This document
 ```
 
 ## How to Run Model
