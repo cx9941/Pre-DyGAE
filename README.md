@@ -38,7 +38,7 @@ Note that pytorch >= 1.13.0
 
 ## Dataset
 
-We have collected JDs from four distinct industries: Daily, Finance, IT, and Manufacturing. They have the same format and in this repository. The four datasets are stored in a form of quadruple sets < occupation − relation − skill − demand > without specific names of occupations and skills for protecting company privacy.
+We have collected Job Descriptions from four distinct industries: Daily, Finance, IT, and Manufacturing. They have the same format in this repository. The four datasets are stored in a form of quadruple sets < occupation − relation − skill − demand > without specific names of occupations and skills for protecting company privacy.
 
 ### Occupational Skill Demand
 
