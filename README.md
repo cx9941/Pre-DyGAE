@@ -1,5 +1,9 @@
 # Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting
 
+![Testing Status](https://img.shields.io/badge/docs-in_progress-green)
+![Testing Status](https://img.shields.io/badge/pypi_package-in_progress-green)
+![Testing Status](https://img.shields.io/badge/license-MIT-blue)
+
 | **[Overview](#overview)**
 | **[Installation](#installation)**
 | **[How to Run Model](#how-to-run-model)**
@@ -114,7 +118,3 @@ booktitle = {Proceedings of the 28th International Joint Conference on Artificia
 ## License
 
 This project is licensed under the MIT License.
-
-## Acknowledgements
-
-This project is follow the [Pytorch-Project-Template](https://github.com/victoresque/pytorch-template) built by [Victor Huang](https://github.com/victoresque)
