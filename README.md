@@ -76,8 +76,8 @@ We have collected JDs from four distinct industries: Daily, Finance, IT, and Man
     ├── task1.py                    # The pipeline for OSD graph completion
     └── task2.py                    # The pipeline for OSD forecasting
 ├── LICENSE                         # The MIT LICENSE
-├── requirements.txt                # The dependencies
-└── README.md                       # This document
+├── README.md                       # This document
+└── requirements.txt                # The dependencies
 ```
 
 ## How to Run Model
@@ -110,7 +110,7 @@ If you find our work is useful for your research, please consider citing:
 @inproceedings{chen_pretrain_2024,
   title={Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting.},
   author={Chen, Xi and Qin, Chuan and Wang, Zhigaoyuan and Cheng, Yihang and Wang, Chao and Zhu, Hengshu and Xiong, Hui},
-booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence},
+  booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence},
   year={2024}
 }
 ```
