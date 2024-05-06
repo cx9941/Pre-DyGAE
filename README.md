@@ -107,7 +107,7 @@ sh scripts/task1.sh Man 0 3 tweedie softplus 100 0.1 0.05 yes yes yes # For Man 
 If you find our work is useful for your research, please consider citing:
 
 ```
-@inproceedings{chen_pretrain_2024,
+@inproceedings{chen_2024_pretrain,
   title={Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting.},
   author={Chen, Xi and Qin, Chuan and Wang, Zhigaoyuan and Cheng, Yihang and Wang, Chao and Zhu, Hengshu and Xiong, Hui},
   booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence},
