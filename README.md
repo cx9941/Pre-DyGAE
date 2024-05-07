@@ -39,7 +39,7 @@ Install library
 Note that pytorch >= 1.13.0
 
 ## Dataset
-The datasets used in our experiments were collected from the public information of one of the largest online recruitment platforms. We gathered JDs spanning a diverse range of occupations, covering the period from January 2020 to December 2023. Along this line, we constructed large-scale datasets from four major industries, i.e., the Daily dataset (Dai), Finance dataset (Fin), IT dataset (IT), and Manufacturing dataset (Man). They have the same format in this repository. The four datasets are stored in a form of quadruple sets < occupation − relation − skill − demand > without specific names of occupations and skills for protecting company privacy.
+The datasets used in our experiments were collected from the public information of one of the largest online recruitment platforms. We gathered JDs spanning a diverse range of occupations, covering the period from January 2020 to December 2023. Along this line, we constructed large-scale datasets from four major industries, i.e., the Daily dataset (Dai), Finance dataset (Fin), IT dataset (IT), and Manufacturing dataset (Man). They have the same format in this repository. The four datasets are stored in a form of quadruple sets < occupation − relation − skill − demand > without specific names of occupations and skills for protecting the privacy.
 
 ### Occupational Skill Demand
 
