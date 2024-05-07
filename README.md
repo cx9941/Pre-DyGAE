@@ -8,6 +8,7 @@
 | **[Installation](#installation)**
 | **[How to Run Model](#how-to-run-model)**
 | **[Dataset](#dataset)**
+| **[Folder Structure](#folder-Structure)**
 | **[Citation](#citation)**
 | **[License](#license)**
 
@@ -47,7 +48,7 @@ We have collected Job Descriptions from four distinct industries: Daily, Finance
 |   20057   |  100000  | 30345 | 0.1111111111111111 |
 |    ...    |   ...   |  ...  |        ...        |
 
-### Folder Structure
+## Folder Structure
 
 ```tex
 └── data
@@ -110,7 +111,7 @@ If you find our work is useful for your research, please consider citing:
 @inproceedings{chen_2024_pretrain,
   title={Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting.},
   author={Chen, Xi and Qin, Chuan and Wang, Zhigaoyuan and Cheng, Yihang and Wang, Chao and Zhu, Hengshu and Xiong, Hui},
-  booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence},
+  booktitle = {Proceedings of the 33th International Joint Conference on Artificial Intelligence},
   year={2024}
 }
 ```
