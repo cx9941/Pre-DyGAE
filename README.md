@@ -14,7 +14,7 @@
 
 ## Overview
 
-Official code for article "[Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting]()".
+Official code for article "[Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting (IJCAI-24)]()".
 
 Occupational skill demand (OSD) forecasting seeks to predict dynamic skill demand specific to occupations, beneficial for employees and employers to grasp occupational nature and maintain a competitive edge in the rapidly evolving labor market. Although recent research has proposed data-driven techniques for forecasting skill demand, the focus has remained predominantly on overall trends rather than occupational granularity. In this paper, we propose a novel Pre-training Enhanced Dynamic Graph Autoencoder (Pre-DyGAE), forecasting skill demand from an occupational perspective.
 
@@ -108,7 +108,7 @@ sh scripts/task1.sh Man 0 3 tweedie softplus 100 0.1 0.05 yes yes yes # For Man 
 If you find our work is useful for your research, please consider citing:
 
 ```
-@inproceedings{chen_2024_pretrain,
+@inproceedings{chen_2024_pre,
   title={Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting.},
   author={Chen, Xi and Qin, Chuan and Wang, Zhigaoyuan and Cheng, Yihang and Wang, Chao and Zhu, Hengshu and Xiong, Hui},
   booktitle = {Proceedings of the 33th International Joint Conference on Artificial Intelligence},
