@@ -39,8 +39,7 @@ Install library
 Note that pytorch >= 1.13.0
 
 ## Dataset
-
-We have collected Job Descriptions from four distinct industries: Daily, Finance, IT, and Manufacturing. They have the same format in this repository. The four datasets are stored in a form of quadruple sets < occupation − relation − skill − demand > without specific names of occupations and skills for protecting company privacy.
+The datasets used in our experiments were collected from the public information of one of the largest online recruitment platforms. We gathered JDs spanning a diverse range of occupations, covering the period from January 2020 to December 2023. Along this line, we constructed large-scale datasets from four major industries, i.e., the Daily dataset (Dai), Finance dataset (Fin), IT dataset (IT), and Manufacturing dataset (Man). They have the same format in this repository. The four datasets are stored in a form of quadruple sets < occupation − relation − skill − demand > without specific names of occupations and skills for protecting company privacy.
 
 ### Occupational Skill Demand
 
@@ -105,6 +104,7 @@ sh scripts/task1.sh Man 0 3 tweedie softplus 100 0.1 0.05 yes yes yes # For Man 
 ```
 
 ## Appendix
+
 Due to the page limit, we have uploaded the appendix to github, strored in paper/appendix.pdf.
 
 ## Citation
