@@ -112,11 +112,19 @@ Due to the page limit, we have uploaded the appendix to github, strored in paper
 If you find our work is useful for your research, please consider citing:
 
 ```
-@inproceedings{chen_2024_pre,
-  title={Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting.},
-  author={Chen, Xi and Qin, Chuan and Wang, Zhigaoyuan and Cheng, Yihang and Wang, Chao and Zhu, Hengshu and Xiong, Hui},
-  booktitle = {Proceedings of the 33th International Joint Conference on Artificial Intelligence},
-  year={2024}
+@inproceedings{ijcai2024p222,
+  title     = {Pre-DyGAE: Pre-training Enhanced Dynamic Graph Autoencoder for Occupational Skill Demand Forecasting},
+  author    = {Chen, Xi and Qin, Chuan and Wang, Zhigaoyuan and Cheng, Yihang and Wang, Chao and Zhu, Hengshu and Xiong, Hui},
+  booktitle = {Proceedings of the Thirty-Third International Joint Conference on
+               Artificial Intelligence, {IJCAI-24}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Kate Larson},
+  pages     = {2009--2017},
+  year      = {2024},
+  month     = {8},
+  note      = {Main Track},
+  doi       = {10.24963/ijcai.2024/222},
+  url       = {https://doi.org/10.24963/ijcai.2024/222},
 }
 ```
 
